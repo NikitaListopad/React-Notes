@@ -5,12 +5,13 @@ export const NotesList = props => {
 
     return(
         <>
-            <ul>
+            <ul className='list-group'>
                 {
-                    props.items.map(item => (
+                    props.items.map((item, index) => (
                         <Note
                             text={item.content}
-                            id={item.id}
+                            id={index}
+                            key={index}
                         />
                     ))
                 }

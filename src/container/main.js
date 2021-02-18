@@ -12,9 +12,12 @@ export const Main = () => {
 
     console.log(notes)
 
-    const onCreateNoteSubmit = (values, {resetForm}) => {
+    const onCreateNoteSubmit = async (values, {resetForm}) => {
         console.log(values)
-        dispatch({type: CREATE_NOTE, payload: values})
+        const result =await dispatch({type: CREATE_NOTE, payload: values})
+        if(result){
+            resetForm({values: ''})
+        }
     }
 
     return(
