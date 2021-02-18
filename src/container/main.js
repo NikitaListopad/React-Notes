@@ -13,10 +13,13 @@ export const Main = () => {
     const {data: notes, loader} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
+    const currentDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
+
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map((note, index) => index)
         const id = itemsId.length + 1
-        const result = await dispatch({type: CREATE_NOTE, payload: {id: id, content: values.content}})
+        const result = await dispatch({type: CREATE_NOTE, payload: {id: id, content: values.content, created_at: currentTime}})
         if(result){
             resetForm({values: ''})
         }

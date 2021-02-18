@@ -16,7 +16,7 @@ export const notes = (state = initialState, action) => {
         case CREATE_NOTE:
             return {
                 ...state,
-                data:[...state.data, action.payload],
+                data:[action.payload, ...state.data],
             }
         case DELETE_NOTE:
             return {

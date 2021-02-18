@@ -8,11 +8,12 @@ export const Note = props => {
     return (
         <>
             <li key={props.id} className='list-group-item list-group-item-action d-flex justify-content-between'>
-                <div className=''>
-                    <span className='text-break mx-1 w-75'>
+                    <span className='text-break mx-1 w-75 mr-5'>
                         {props.text}
                     </span>
-                </div>
+                    <span className='sup text-muted blockquote-footer'>
+                        {`Created at ${props.createdDate}`}
+                    </span>
                 <div className='btn-group'>
                     <Button
                         onClick={() => props.onEditNoteClick(props.id)}

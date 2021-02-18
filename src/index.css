@@ -26,3 +26,12 @@ code {
   max-height: 50px;
   opacity: .80;
 }
+
+.btn-group {
+  min-width: 25%;
+  max-width: 35%;
+}
+
+.sup {
+  width: 15%;
+}

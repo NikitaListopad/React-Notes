@@ -11,6 +11,7 @@ export const NotesList = props => {
                         <Note
                             onDeleteNoteClick={props.onDeleteNoteClick}
                             onEditNoteClick={props.onEditNoteClick}
+                            createdDate={item.created_at}
                             text={item.content}
                             id={item.id}
                             key={item.id}
