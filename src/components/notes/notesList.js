@@ -5,7 +5,16 @@ export const NotesList = props => {
 
     return(
         <>
-            <Note />
+            <ul>
+                {
+                    props.items.map(item => (
+                        <Note
+                            text={item.content}
+                            id={item.id}
+                        />
+                    ))
+                }
+            </ul>
         </>
     )
 }

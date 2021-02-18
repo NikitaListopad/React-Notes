@@ -13,7 +13,7 @@ export const CreateNoteForm = props => {
             onSubmit={(values, {resetForm}) => {
                 props.onSubmit(values, {resetForm})
             }}
-            validationSchema={props.validation}
+            // validationSchema={props.validation}
         >
             {({
                   values,
