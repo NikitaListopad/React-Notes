@@ -15,6 +15,7 @@ export const Note = props => {
                 </div>
                 <div className='btn-group'>
                     <Button
+                        onClick={() => props.onEditNoteClick(props.id)}
                         className='btn btn-outline-primary'
                         text='Edit Note'
                     />

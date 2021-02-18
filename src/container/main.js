@@ -2,12 +2,13 @@ import React,{useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/createNoteForm";
 import {useDispatch, useSelector, useStore} from "react-redux";
-import {CREATE_NOTE, DELETE_NOTE, notesSelector} from "../store/notes";
+import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
 
 export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
+    const [editMode, setEditMode] = useState(false)
 
     const {data: notes, loader} = useSelector(notesSelector)
     const dispatch = useDispatch()
@@ -21,27 +22,35 @@ export const Main = () => {
         }
     }
 
+    const onEditPostSubmit = (values, {resetForm}) => {
+        dispatch({type: EDIT_NOTE, payload: {id: targetPostId, content: values.content}})
+        resetForm({values: ''})
+        setEditMode(false)
+        setTargetPostId(null)
+    }
+
     const onDeleteNoteClick = id => {
         dispatch({type: DELETE_NOTE, payload: id})
     }
 
     const onEditNoteClick = id => {
         setTargetPostId(id)
+        setEditMode(true)
     }
 
-    const onEditPostSubmit = values => {
 
-    }
 
     return(
         <>
             <div className='container w-75 p-2 border border-primary'>
                 <Header />
                 <CreateNoteForm
-                    onSubmit={onCreateNoteSubmit}
+                    onSubmit={!editMode ? onCreateNoteSubmit : onEditPostSubmit}
+                    text={!editMode ? 'Create' : 'Accept edit'}
                 />
                 <NotesList
                     onDeleteNoteClick={onDeleteNoteClick}
+                    onEditNoteClick={onEditNoteClick}
                     items={notes}
                 />
             </div>

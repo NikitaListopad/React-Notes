@@ -10,6 +10,7 @@ export const NotesList = props => {
                     props.items.map(item => (
                         <Note
                             onDeleteNoteClick={props.onDeleteNoteClick}
+                            onEditNoteClick={props.onEditNoteClick}
                             text={item.content}
                             id={item.id}
                             key={item.id}
