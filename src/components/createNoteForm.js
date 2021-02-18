@@ -37,7 +37,7 @@ export const CreateNoteForm = props => {
                     <Button disabled={!isValid || !dirty}
                             type='submit'
                             onClick={handleSubmit}
-                            text={props.text}
+                            text='Добавить'
                     />
                 </div>
             )}

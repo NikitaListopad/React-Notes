@@ -16,7 +16,13 @@ code {
   display: flex;
   margin: 15px auto;
   max-width: 70%;
-  width: 50%;
+  width: 100%;
   min-width: 30%;
   align-items: center;
+}
+
+.btn {
+  margin-left: 10px;
+  max-height: 50px;
+  opacity: .80;
 }
