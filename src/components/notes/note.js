@@ -19,6 +19,7 @@ export const Note = props => {
                         text='Edit Note'
                     />
                     <Button
+                        onClick={() => props.onDeleteNoteClick(props.id)}
                         className='btn btn-outline-primary'
                         text='Delete Note'
                     />

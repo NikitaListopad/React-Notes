@@ -7,11 +7,12 @@ export const NotesList = props => {
         <>
             <ul className='list-group'>
                 {
-                    props.items.map((item, index) => (
+                    props.items.map(item => (
                         <Note
+                            onDeleteNoteClick={props.onDeleteNoteClick}
                             text={item.content}
-                            id={index}
-                            key={index}
+                            id={item.id}
+                            key={item.id}
                         />
                     ))
                 }

@@ -2,22 +2,35 @@ import React,{useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/createNoteForm";
 import {useDispatch, useSelector, useStore} from "react-redux";
-import {CREATE_NOTE, notesSelector} from "../store/notes";
+import {CREATE_NOTE, DELETE_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
 
 export const Main = () => {
 
+    const [targetPostId, setTargetPostId] = useState(null)
+
     const {data: notes, loader} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
-    console.log(notes)
-
     const onCreateNoteSubmit = async (values, {resetForm}) => {
-        console.log(values)
-        const result =await dispatch({type: CREATE_NOTE, payload: values})
+        const itemsId = notes.map((note, index) => index)
+        const id = itemsId.length + 1
+        const result = await dispatch({type: CREATE_NOTE, payload: {id: id, content: values.content}})
         if(result){
             resetForm({values: ''})
         }
+    }
+
+    const onDeleteNoteClick = id => {
+        dispatch({type: DELETE_NOTE, payload: id})
+    }
+
+    const onEditNoteClick = id => {
+        setTargetPostId(id)
+    }
+
+    const onEditPostSubmit = values => {
+
     }
 
     return(
@@ -28,6 +41,7 @@ export const Main = () => {
                     onSubmit={onCreateNoteSubmit}
                 />
                 <NotesList
+                    onDeleteNoteClick={onDeleteNoteClick}
                     items={notes}
                 />
             </div>

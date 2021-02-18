@@ -1,15 +1,9 @@
-import {CREATE_NOTE} from "./actions";
+import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE} from "./actions";
 import {act} from "@testing-library/react";
 
 export const getInitialState = data => ({
     loader: false,
     data,
-    error: false
-})
-
-export const successHandler = (action, payload) => ({
-    type: success(action),
-    payload,
     error: false
 })
 
@@ -24,12 +18,17 @@ export const notes = (state = initialState, action) => {
                 ...state,
                 data:[...state.data, action.payload],
             }
-        case success(CREATE_NOTE):
+        case DELETE_NOTE:
             return {
                 ...state,
-                loader: false,
-                data:action.payload
+                data: state.data.filter(note => note.id !== action.payload)
             }
+        case EDIT_NOTE:
+            return {
+                ...state,
+                data: state.data.map(note => note.id === action.payload.id ? action.payload : note)
+            }
+
         default: {
             return state
         }
