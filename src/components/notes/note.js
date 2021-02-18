@@ -11,10 +11,11 @@ export const Note = props => {
                     <span className='text-break mx-1 w-75 mr-5'>
                         {props.text}
                     </span>
-                    <span className='sup text-muted blockquote-footer'>
-                        {`Created at ${props.createdDate}`}
-                    </span>
                 <div className='btn-group'>
+                    <Button
+                        text='Info'
+
+                    />
                     <Button
                         onClick={() => props.onEditNoteClick(props.id)}
                         className='btn btn-outline-primary'
