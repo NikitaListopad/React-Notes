@@ -14,7 +14,8 @@ export const Note = props => {
                     </span>
                 <div className='btn-group'>
                     <Button
-                        text={props.infoMode ? 'Note' : 'Info'}
+                        text={(props.targetPostId === props.id) && props.infoMode ? 'Note' : 'Info'}
+                        disabled={(props.targetPostId !== props.id) && props.infoMode}
                         onClick={() => props.onInfoClick(props.id)}
                     />
                     <Button

@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React, {useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/createNoteForm";
 import {useDispatch, useSelector, useStore} from "react-redux";
@@ -16,14 +16,17 @@ export const Main = () => {
 
     console.log(notes)
 
-    const currentDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map((note, index) => index)
         const id = itemsId.length + 1
-        const result = await dispatch({type: CREATE_NOTE, payload: {id: id, content: values.content, created_at: currentTime}})
-        if(result){
+        const result = await dispatch({
+            type: CREATE_NOTE,
+            payload: {id: id, content: values.content, created_at: currentTime}
+        })
+        if (result) {
             resetForm({values: ''})
         }
     }
@@ -49,15 +52,17 @@ export const Main = () => {
         setInfoMode(true)
     }
 
-    const onNoteButtonClick = () => {
-        setInfoMode(false)
+    const onNoteButtonClick = id => {
+        if (id === targetPostId) {
+            setInfoMode(false)
+        }
     }
 
 
-    return(
+    return (
         <>
             <div className='container w-75 p-2 border border-primary'>
-                <Header />
+                <Header/>
                 <CreateNoteForm
                     onSubmit={!editMode ? onCreateNoteSubmit : onEditPostSubmit}
                     text={!editMode ? 'Create' : 'Accept edit'}
