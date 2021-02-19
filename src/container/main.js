@@ -9,9 +9,12 @@ export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [editMode, setEditMode] = useState(false)
+    const [infoMode, setInfoMode] = useState(false)
 
     const {data: notes, loader} = useSelector(notesSelector)
     const dispatch = useDispatch()
+
+    console.log(notes)
 
     const currentDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
@@ -41,6 +44,14 @@ export const Main = () => {
         setEditMode(true)
     }
 
+    const onInfoButtonClick = id => {
+        setTargetPostId(id)
+        setInfoMode(true)
+    }
+
+    const onNoteButtonClick = () => {
+        setInfoMode(false)
+    }
 
 
     return(
@@ -55,6 +66,9 @@ export const Main = () => {
                     onDeleteNoteClick={onDeleteNoteClick}
                     onEditNoteClick={onEditNoteClick}
                     items={notes}
+                    infoMode={infoMode}
+                    onInfoClick={!infoMode ? onInfoButtonClick : onNoteButtonClick}
+                    targetPostId={targetPostId}
                 />
             </div>
         </>

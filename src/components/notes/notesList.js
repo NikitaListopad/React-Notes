@@ -15,6 +15,10 @@ export const NotesList = props => {
                             text={item.content}
                             id={item.id}
                             key={item.id}
+                            infoMode={props.infoMode}
+                            createdAt={item.created_at}
+                            onInfoClick={props.onInfoClick}
+                            targetPostId={props.targetPostId}
                         />
                     ))
                 }
