@@ -1,7 +1,6 @@
 import React from 'react'
 
 export const Input = props => {
-    const hasError = props.errors && props.touched;
 
     return (
         <>
@@ -10,7 +9,7 @@ export const Input = props => {
                    id={props.id}
                    onBlur={props.onBlur}
                    value={props.value}
-                   className={`form-control ${hasError ? 'is-invalid' : ''} ${props.className ? props.className : ''}`}
+                   className={props.className ? props.className : (`form-control ${props.className ? props.className : ''}`)}
                    onChange={props.onChange}
                    placeholder={props.placeholder}
                    maxLength={props.maxlength}
