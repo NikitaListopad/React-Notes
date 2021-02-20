@@ -11,14 +11,13 @@ export const NotesList = props => {
                         <Note
                             onDeleteNoteClick={props.onDeleteNoteClick}
                             onEditNoteClick={props.onEditNoteClick}
-                            createdDate={item.created_at}
-                            text={item.content}
-                            id={item.id}
+                            item={item}
                             key={item.id}
                             infoMode={props.infoMode}
-                            createdAt={item.created_at}
                             onInfoClick={props.onInfoClick}
                             targetPostId={props.targetPostId}
+                            selectMode={props.selectMode}
+                            onSelectNoteClick={props.onSelectNoteClick}
                         />
                     ))
                 }

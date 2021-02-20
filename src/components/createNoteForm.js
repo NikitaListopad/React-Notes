@@ -13,11 +13,9 @@ export const CreateNoteForm = props => {
             onSubmit={(values, {resetForm}) => {
                 props.onSubmit(values, {resetForm})
             }}
-            // validationSchema={props.validation}
         >
             {({
                   values,
-                  errors,
                   handleChange,
                   handleBlur,
                   isValid,
@@ -32,7 +30,6 @@ export const CreateNoteForm = props => {
                            placeholder='Write your text'
                            onChange={handleChange}
                            onBlur={handleBlur}
-                           errors={errors.content}
                     />
                     <Button disabled={!isValid || !dirty}
                             type='submit'
