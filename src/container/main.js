@@ -20,8 +20,9 @@ export const Main = () => {
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
-        const itemsId = notes.map((note, index) => index)
-        const id = itemsId.length + 1
+        const itemsId = notes.map(note => note.id)
+        console.log(itemsId)
+        const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const result = await dispatch({
             type: CREATE_NOTE,
             payload: {id: id, content: values.content, created_at: currentTime}
@@ -36,10 +37,13 @@ export const Main = () => {
         resetForm({values: ''})
         setEditMode(false)
         setTargetPostId(null)
+        setInfoMode(false)
     }
 
     const onDeleteNoteClick = id => {
         dispatch({type: DELETE_NOTE, payload: id})
+        console.log(id)
+        console.log(notes)
     }
 
     const onEditNoteClick = id => {
