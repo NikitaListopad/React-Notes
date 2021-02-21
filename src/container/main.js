@@ -6,13 +6,14 @@ import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes
 import {NotesList} from "../components/notes";
 import {categories} from "../constants/categoies";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
+import {Navbar} from "../components/elements/navbar";
 
 export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
-    const [selectMode, setSelectCategoryMode] = useState(false)
+    const [selectMode, setSelectMode] = useState(false)
     const [selectedNotes, setSelectedNotes] = useState([])
 
     const {data: notes} = useSelector(notesSelector)
@@ -63,6 +64,11 @@ export const Main = () => {
         }
     }
 
+    const onSelectCategoryClick = () => {
+        setSelectMode(true)
+        console.log('Works')
+    }
+
     const onSelectNoteClick = item => {
         setSelectedNotes([...selectedNotes, item])
         for (let i = 0; i < selectedNotes.length; i++) {
@@ -74,13 +80,18 @@ export const Main = () => {
 
     const onAddToCategoryAccept = value => {
         console.log(value)
-        setSelectCategoryMode(false)
+        setSelectMode(false)
     }
 
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
                 <Header/>
+                <Navbar
+                    items={categories}
+                    text='Add note to category'
+                    onSelectCategoryClick={onSelectCategoryClick}
+                />
                 {selectMode ?
                     <SelectCategoryForm
                         items={categories}
