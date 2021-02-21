@@ -1,14 +1,5 @@
 import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE} from "./actions";
-import {act} from "@testing-library/react";
-
-export const getInitialState = data => ({
-    loader: false,
-    data,
-    error: false
-})
-
-export const success = (action) => `${action}_SUCCESS`
-export const error = (action) => `${action}_SUCCESS`
+import {getInitialState} from "../../helpers/redux";
 
 const initialState = getInitialState([])
 export const notes = (state = initialState, action) => {
@@ -28,7 +19,6 @@ export const notes = (state = initialState, action) => {
                 ...state,
                 data: state.data.map(note => note.id === action.payload.id ? action.payload : note)
             }
-
         default: {
             return state
         }

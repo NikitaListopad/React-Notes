@@ -7,17 +7,24 @@ import {NotesList} from "../components/notes";
 import {categories} from "../constants/categoies";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
+import {categoriesSelector} from "../store/categories";
 
 export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
+    const [selectedNotes, setSelectedNotes] = useState([])
+
+
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
-    const [selectedNotes, setSelectedNotes] = useState([])
+
+
 
     const {data: notes} = useSelector(notesSelector)
+    const {home, work, school} = useSelector(categoriesSelector)
     const dispatch = useDispatch()
+
 
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
@@ -85,6 +92,8 @@ export const Main = () => {
     const onAddToCategoryAccept = values => {
         setSelectMode(false)
         console.log(values)
+        console.log(`ADD_TO_${values.category}`)
+        dispatch({type: `ADD_TO_${values.category}`, payload: selectedNotes})
     }
 
     return (

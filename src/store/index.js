@@ -3,16 +3,18 @@ import {notes} from "./notes";
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import {categoriesReducer} from "./categories";
 
 
 const persistConfig = {
     key: 'notes',
     storage,
-    whitelist: ['notes']
+    whitelist: ['notes', 'categoriesReducer']
 }
 
 const reducers = combineReducers({
-    notes
+    notes,
+    categoriesReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers)

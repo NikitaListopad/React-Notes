@@ -1,5 +1,5 @@
 export const categories = [
-    {text: 'Work', value: 'work'},
-    {text: 'Home', value: 'home'},
-    {text: 'School', value: 'school'}
+    {text: 'Work', value: 'WORK'},
+    {text: 'Home', value: 'HOME'},
+    {text: 'School', value: 'SCHOOL'}
 ]
