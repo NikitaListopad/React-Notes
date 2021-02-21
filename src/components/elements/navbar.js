@@ -5,7 +5,8 @@ export const Navbar = props => {
 
 
     return(
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between">
+            <div>
             {props.items.map(item =>
                 <Button
                     type='button'
@@ -13,6 +14,7 @@ export const Navbar = props => {
                     text={item.text}
                 />
             )}
+            </div>
             <Button
                 type='button'
                 className=''

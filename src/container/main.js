@@ -69,6 +69,10 @@ export const Main = () => {
         console.log('Works')
     }
 
+    const onCancelCategorySelectClick = () => {
+        setSelectMode(false)
+    }
+
     const onSelectNoteClick = item => {
         setSelectedNotes([...selectedNotes, item])
         for (let i = 0; i < selectedNotes.length; i++) {
@@ -78,9 +82,9 @@ export const Main = () => {
         }
     }
 
-    const onAddToCategoryAccept = value => {
-        console.log(value)
+    const onAddToCategoryAccept = values => {
         setSelectMode(false)
+        console.log(values)
     }
 
     return (
@@ -89,8 +93,8 @@ export const Main = () => {
                 <Header/>
                 <Navbar
                     items={categories}
-                    text='Add note to category'
-                    onSelectCategoryClick={onSelectCategoryClick}
+                    text={!selectMode ? 'Add note to category' : 'Cancel'}
+                    onSelectCategoryClick={!selectMode ? onSelectCategoryClick : onCancelCategorySelectClick}
                 />
                 {selectMode ?
                     <SelectCategoryForm
