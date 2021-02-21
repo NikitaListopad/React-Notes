@@ -1,6 +1,6 @@
 import React from "react";
 import {Field, Formik} from "formik";
-import {Button, Input} from "./elements";
+import {Button, Input} from "../elements";
 
 export const CreateNoteForm = props => {
 

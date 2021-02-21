@@ -1,20 +1,21 @@
 import React, {useState} from 'react'
 import {Header} from "./header";
-import {CreateNoteForm} from "../components/createNoteForm";
-import {useDispatch, useSelector, useStore} from "react-redux";
+import {CreateNoteForm} from "../components/forms/createNoteForm";
+import {useDispatch, useSelector} from "react-redux";
 import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
-import {Button} from "../components/elements";
+import {categories} from "../constants/categoies";
+import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 
 export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
-    const [selectMode, setSelectCategoryMode] = useState(true)
+    const [selectMode, setSelectCategoryMode] = useState(false)
     const [selectedNotes, setSelectedNotes] = useState([])
 
-    const {data: notes, loader} = useSelector(notesSelector)
+    const {data: notes} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
@@ -63,24 +64,30 @@ export const Main = () => {
     }
 
     const onSelectNoteClick = item => {
-       setSelectedNotes([...selectedNotes, item])
-        for(let i = 0; i < selectedNotes.length; i++) {
-            if(selectedNotes[i].id === item.id) {
+        setSelectedNotes([...selectedNotes, item])
+        for (let i = 0; i < selectedNotes.length; i++) {
+            if (selectedNotes[i].id === item.id) {
                 setSelectedNotes(selectedNotes.filter(test => test.id !== selectedNotes[i].id))
             }
         }
     }
 
+    const onAddToCategoryAccept = value => {
+        console.log(value)
+        setSelectCategoryMode(false)
+    }
 
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
                 <Header/>
-                <Button
-                    type='button'
-                    text='Test accept select'
-
-                />
+                {selectMode ?
+                    <SelectCategoryForm
+                        items={categories}
+                        onSubmit={onAddToCategoryAccept}
+                    />
+                    : null
+                }
                 <CreateNoteForm
                     onSubmit={!editMode ? onCreateNoteSubmit : onEditPostSubmit}
                     text={!editMode ? 'Create' : 'Accept edit'}
