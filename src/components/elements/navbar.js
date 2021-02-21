@@ -7,9 +7,10 @@ export const Navbar = props => {
     return(
         <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between">
             <div>
-            {props.items.map(item =>
+            {props.items.map((item, index) =>
                 <Button
                     type='button'
+                    key={index}
                     onClick={props.onClick}
                     text={item.text}
                 />
