@@ -8,26 +8,27 @@ import {categories} from "../constants/categoies";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
 import {categoriesSelector} from "../store/categories";
+import {useParams} from "react-router-dom";
+import {get} from 'lodash'
 
 export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [selectedNotes, setSelectedNotes] = useState([])
-
-
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
 
-
-
     const {data: notes} = useSelector(notesSelector)
-    const {home, work, school} = useSelector(categoriesSelector)
+    const globalCategories = useSelector(categoriesSelector)
     const dispatch = useDispatch()
 
+    const {path} = useParams();
 
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
+
+    const categoryNotes = get(globalCategories, [`${path}`], [])
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
@@ -50,7 +51,7 @@ export const Main = () => {
     }
 
     const onDeleteNoteClick = id => {
-        dispatch({type: DELETE_NOTE, payload: id})
+        dispatch({type: path ? DELETE_NOTE : `DELETE_FROM_${path.toUpperCase()}`, payload: id})
     }
 
     const onEditNoteClick = id => {
@@ -73,7 +74,6 @@ export const Main = () => {
 
     const onSelectCategoryClick = () => {
         setSelectMode(true)
-        console.log('Works')
     }
 
     const onCancelCategorySelectClick = () => {
@@ -90,10 +90,9 @@ export const Main = () => {
     }
 
     const onAddToCategoryAccept = values => {
-        setSelectMode(false)
-        console.log(values)
-        console.log(`ADD_TO_${values.category}`)
         dispatch({type: `ADD_TO_${values.category}`, payload: selectedNotes})
+        setSelectedNotes([])
+        setSelectMode(false)
     }
 
     return (
@@ -120,7 +119,7 @@ export const Main = () => {
                     selectMode={selectMode}
                     onDeleteNoteClick={onDeleteNoteClick}
                     onEditNoteClick={onEditNoteClick}
-                    items={notes}
+                    items={!path ? notes : categoryNotes}
                     infoMode={infoMode}
                     onInfoClick={!infoMode ? onInfoButtonClick : onNoteButtonClick}
                     targetPostId={targetPostId}
