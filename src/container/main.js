@@ -103,6 +103,7 @@ export const Main = () => {
                     items={categories}
                     text={!selectMode ? 'Add note to category' : 'Cancel'}
                     onSelectCategoryClick={!selectMode ? onSelectCategoryClick : onCancelCategorySelectClick}
+                    path={path}
                 />
                 {selectMode ?
                     <SelectCategoryForm
@@ -111,10 +112,13 @@ export const Main = () => {
                     />
                     : null
                 }
-                <CreateNoteForm
-                    onSubmit={!editMode ? onCreateNoteSubmit : onEditPostSubmit}
-                    text={!editMode ? 'Create' : 'Accept edit'}
-                />
+                {!path ?
+                    <CreateNoteForm
+                        onSubmit={!editMode ? onCreateNoteSubmit : onEditPostSubmit}
+                        text={!editMode ? 'Create' : 'Accept edit'}
+                    />
+                    : null
+                }
                 <NotesList
                     selectMode={selectMode}
                     onDeleteNoteClick={onDeleteNoteClick}
