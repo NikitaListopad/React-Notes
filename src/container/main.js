@@ -15,11 +15,13 @@ export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [selectedNotes, setSelectedNotes] = useState([])
+
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
 
     const {data: notes} = useSelector(notesSelector)
+    const {home, work, school} = useSelector(categoriesSelector)
     const globalCategories = useSelector(categoriesSelector)
     const dispatch = useDispatch()
 
@@ -51,7 +53,7 @@ export const Main = () => {
     }
 
     const onDeleteNoteClick = id => {
-        dispatch({type: path ? DELETE_NOTE : `DELETE_FROM_${path.toUpperCase()}`, payload: id})
+        dispatch({type: !path ? DELETE_NOTE : `DELETE_FROM_${path.toUpperCase()}`, payload: id})
     }
 
     const onEditNoteClick = id => {
@@ -84,7 +86,7 @@ export const Main = () => {
         setSelectedNotes([...selectedNotes, item])
         for (let i = 0; i < selectedNotes.length; i++) {
             if (selectedNotes[i].id === item.id) {
-                setSelectedNotes(selectedNotes.filter(test => test.id !== selectedNotes[i].id))
+                setSelectedNotes(selectedNotes.filter(selected => selected.id !== selectedNotes[i].id))
             }
         }
     }
