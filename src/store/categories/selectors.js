@@ -1,5 +1,3 @@
-
-
 import {createSelector} from 'reselect';
 
 const categories = state => state.categoriesReducer
