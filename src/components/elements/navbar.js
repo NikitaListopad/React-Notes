@@ -25,7 +25,15 @@ export const Navbar = props => {
                     onClick={props.onSelectCategoryClick}
                     text={props.text}
                 />
-                : null
+                :
+                <Link to='/'>
+                    <Button
+                        type='button'
+                        className=''
+                        onClick={props.onDeleteCategoryClick}
+                        text={props.selectButtonText}
+                    />
+                </Link>
             }
         </nav>
     )
