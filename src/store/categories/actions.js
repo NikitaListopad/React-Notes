@@ -1,7 +1,0 @@
-export const ADD_TO_SCHOOL = 'ADD_TO_SCHOOL'
-export const ADD_TO_WORK = 'ADD_TO_WORK'
-export const ADD_TO_HOME = 'ADD_TO_HOME'
-
-export const DELETE_FROM_SCHOOL = 'DELETE_FROM_SCHOOL'
-export const DELETE_FROM_WORK = 'DELETE_FROM_WORK'
-export const DELETE_FROM_HOME = 'DELETE_FROM_HOME'

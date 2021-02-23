@@ -1,28 +1,32 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/forms/createNoteForm";
 import {useDispatch, useSelector} from "react-redux";
-import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
+import {CLEAR_STORE, CREATE_NOTE, DELETE_ALL_NOTES, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
-import {categories} from "../constants/categoies";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
-import {categoriesSelector} from "../store/categories";
 import {useParams} from "react-router-dom";
-import {get} from 'lodash'
+import {Button} from "../components/elements";
 
 export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [selectedNotes, setSelectedNotes] = useState([])
+    const categories = [{text: 'All', value: ''}]
+
+    const [counter, setCounter] = useState(1)
 
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
 
+
+    useEffect(() => {
+        console.log('upd')
+    }, [counter]);
+
     const {data: notes} = useSelector(notesSelector)
-    const {home, work, school} = useSelector(categoriesSelector)
-    const globalCategories = useSelector(categoriesSelector)
     const dispatch = useDispatch()
 
     const {path} = useParams();
@@ -30,7 +34,15 @@ export const Main = () => {
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
-    const categoryNotes = get(globalCategories, [`${path}`], [])
+    const categoryNotes = path ? JSON.parse(localStorage.getItem(path)) : []
+
+    console.log(categoryNotes)
+
+    for (let key in {...localStorage}) {
+        if (key !== 'persist:notes') {
+            categories.push({text: key, value: key})
+        }
+    }
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
@@ -44,8 +56,15 @@ export const Main = () => {
         }
     }
 
-    const onEditPostSubmit = (values, {resetForm}) => {
+    const onEditNoteSubmit = (values, {resetForm}) => {
         dispatch({type: EDIT_NOTE, payload: {id: targetPostId, content: values.content}})
+        if (path) {
+            const currentCategoryNotes = JSON.parse(localStorage.getItem(path))
+            localStorage.setItem(path, JSON.stringify(currentCategoryNotes.map(note => note.id === targetPostId ? {
+                id: targetPostId,
+                content: values.content
+            } : note)))
+        }
         resetForm({values: ''})
         setEditMode(false)
         setTargetPostId(null)
@@ -53,7 +72,16 @@ export const Main = () => {
     }
 
     const onDeleteNoteClick = id => {
-        dispatch({type: !path ? DELETE_NOTE : `DELETE_FROM_${path.toUpperCase()}`, payload: id})
+        dispatch({type: DELETE_NOTE, payload: id})
+        if (path) {
+            const currentCategoryNotes = JSON.parse(localStorage.getItem(path))
+            localStorage.setItem(path, JSON.stringify(currentCategoryNotes.filter(note => note.id !== id)))
+        }
+    }
+
+    const onDeleteAllClick = () => {
+        localStorage.clear()
+        dispatch({type: DELETE_ALL_NOTES})
     }
 
     const onEditNoteClick = id => {
@@ -79,6 +107,7 @@ export const Main = () => {
     }
 
     const onCancelCategorySelectClick = () => {
+        setSelectedNotes([])
         setSelectMode(false)
     }
 
@@ -92,20 +121,50 @@ export const Main = () => {
     }
 
     const onAddToCategoryAccept = values => {
-        dispatch({type: `ADD_TO_${values.category}`, payload: selectedNotes})
+        const alsoAdded = JSON.parse(localStorage.getItem(values.category))
+        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.find(item => item.id === note.id)?.id)
+        localStorage.setItem(values.category, JSON.stringify([...alsoAdded, ...toAdd]))
         setSelectedNotes([])
         setSelectMode(false)
+    }
+
+    const onCreateCategoryClick = () => {
+        const name = prompt('What is category name? ', '')
+        localStorage.setItem(name.toLowerCase(), JSON.stringify([]))
+        setCounter(counter + 1)
+    }
+
+    const onDeleteCategoryClick = () => {
+        localStorage.removeItem(path)
+        setCounter(counter + 1)
+    }
+
+    const onChangeCategoryClick = () => {
+        setSelectMode(false)
+        setSelectedNotes([])
+        setEditMode(false)
     }
 
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
+                <Button
+                    text='Create category'
+                    onClick={onCreateCategoryClick}
+                />
+                <Button
+                    text='Delete all notes'
+                    onClick={onDeleteAllClick}
+                />
                 <Header/>
                 <Navbar
                     items={categories}
-                    text={!selectMode ? 'Add note to category' : 'Cancel'}
+                    text={!selectMode ? 'Select notes' : 'Cancel'}
+                    selectButtonText='Delete category'
                     onSelectCategoryClick={!selectMode ? onSelectCategoryClick : onCancelCategorySelectClick}
                     path={path}
+                    onClick={onChangeCategoryClick}
+                    onDeleteCategoryClick={onDeleteCategoryClick}
                 />
                 {selectMode ?
                     <SelectCategoryForm
@@ -116,10 +175,19 @@ export const Main = () => {
                 }
                 {!path ?
                     <CreateNoteForm
-                        onSubmit={!editMode ? onCreateNoteSubmit : onEditPostSubmit}
+                        onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
                         text={!editMode ? 'Create' : 'Accept edit'}
                     />
-                    : null
+                    :
+                    <>
+                        {editMode ?
+                            <CreateNoteForm
+                                onSubmit={onEditNoteSubmit}
+                                text={'Accept edit'}
+                            />
+                            : null
+                        }
+                    </>
                 }
                 <NotesList
                     selectMode={selectMode}

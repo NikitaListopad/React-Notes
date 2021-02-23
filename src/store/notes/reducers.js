@@ -1,4 +1,4 @@
-import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE} from "./actions";
+import {DELETE_ALL_NOTES, CREATE_NOTE, DELETE_NOTE, EDIT_NOTE} from "./actions";
 import {getInitialState} from "../../helpers/redux";
 
 const initialState = getInitialState([])
@@ -19,6 +19,12 @@ export const notes = (state = initialState, action) => {
                 ...state,
                 data: state.data.map(note => note.id === action.payload.id ? action.payload : note)
             }
+        case DELETE_ALL_NOTES:
+            return {
+                ...state,
+                data: []
+            }
+
         default: {
             return state
         }
