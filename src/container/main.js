@@ -167,12 +167,6 @@ export const Main = () => {
         }
     }
 
-    console.log(subCategoryNotes)
-
-    // const toret = Object.entries(JSON.parse(localStorage.getItem(path)))
-
-    // console.log(toret)
-
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
@@ -209,8 +203,10 @@ export const Main = () => {
                         url={url}
                         path={path}
                         onClick={takeValueFromNavBar}
+                        subCategory={true}
                     />
-                    : null}
+                    : null
+                }
                 {selectMode ?
                     <SelectCategoryForm
                         items={categories}
