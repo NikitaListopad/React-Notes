@@ -26,23 +26,23 @@ export const Navbar = props => {
                 {!props.subCategory ?
                     (
                         <>
-                            {!props.path ?
+                            {/*{!props.path ?*/}
                                 <Button
                                     type='button'
                                     className=''
                                     onClick={props.onSelectCategoryClick}
                                     text={props.text}
                                 />
-                                :
-                                <Link to='/'>
-                                    <Button
-                                        type='button'
-                                        className=''
-                                        onClick={props.onDeleteCategoryClick}
-                                        text={props.selectButtonText}
-                                    />
-                                </Link>
-                            }
+                            {/*    :*/}
+                            {/*    <Link to='/'>*/}
+                            {/*        <Button*/}
+                            {/*            type='button'*/}
+                            {/*            className=''*/}
+                            {/*            onClick={props.onDeleteCategoryClick}*/}
+                            {/*            text={props.selectButtonText}*/}
+                            {/*        />*/}
+                            {/*    </Link>*/}
+                            {/*}*/}
                         </>
                     )
                     : null

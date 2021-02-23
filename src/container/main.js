@@ -40,6 +40,11 @@ export const Main = () => {
         }
     }
 
+    subCategoryIsOpen ? localStorage.setItem('url', JSON.stringify(subCategoryIsOpen)) : console.log('added')
+    !path ? localStorage.removeItem('url') : console.log('deleted')
+    console.log(subCategoryIsOpen)
+
+
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
@@ -71,8 +76,24 @@ export const Main = () => {
         dispatch({type: DELETE_NOTE, payload: id})
         if (path) {
             const currentCategoryNotes = JSON.parse(localStorage.getItem(path))
-            localStorage.setItem(path, JSON.stringify(currentCategoryNotes.filter(note => note.id !== id)))
+            console.log(currentCategoryNotes)
+            for (let key in currentCategoryNotes) {
+                console.log(key)
+                localStorage.setItem(path, JSON.stringify({
+                        ...currentCategoryNotes,
+                        All: currentCategoryNotes.All.filter(note => note.id !== id),
+                        [key]: currentCategoryNotes.All.filter(note => note.id !== id)
+                    })
+                )
+            }
+            // for (let key in currentCategoryNotes) {
+            //         localStorage.setItem(path, JSON.stringify({
+            //             // ...currentCategoryNotes,
+            //             [key]: currentCategoryNotes[key].filter(note => note.id !== id)
+            //         }))
+            // }
         }
+        // setSubCategoryNotes(subCategoryNotes.filter(note => note.id !== id))
     }
 
     const onDeleteAllClick = () => {
@@ -118,8 +139,10 @@ export const Main = () => {
 
     const onAddToCategoryAccept = values => {
         const alsoAdded = JSON.parse(localStorage.getItem(values.category))
+
         const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.All.find(item => item.id === note.id)?.id)
         localStorage.setItem(values.category, JSON.stringify({
+            ...alsoAdded,
             All: [...alsoAdded.All, ...toAdd]
         }))
         setSelectedNotes([])
@@ -167,6 +190,17 @@ export const Main = () => {
         }
     }
 
+    const onAddToSubCategoriesAccept = values => {
+        const alsoAdded = JSON.parse(localStorage.getItem(path))
+        for (let key in alsoAdded) {
+            if (key === values.category) {
+                localStorage.setItem(path, JSON.stringify({...alsoAdded, [values.category]: selectedNotes}))
+            }
+        }
+        setSelectedNotes([])
+        setSelectMode(false)
+    }
+
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
@@ -209,8 +243,8 @@ export const Main = () => {
                 }
                 {selectMode ?
                     <SelectCategoryForm
-                        items={categories}
-                        onSubmit={onAddToCategoryAccept}
+                        items={!path ? categories : subCategories}
+                        onSubmit={!path ? onAddToCategoryAccept : onAddToSubCategoriesAccept}
                     />
                     : null
                 }
