@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/forms/createNoteForm";
 import {useDispatch, useSelector} from "react-redux";
-import {CLEAR_STORE, CREATE_NOTE, DELETE_ALL_NOTES, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
+import {CREATE_NOTE, DELETE_ALL_NOTES, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
@@ -21,22 +21,20 @@ export const Main = () => {
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
 
-
-    useEffect(() => {
-        console.log('upd')
-    }, [counter]);
-
     const {data: notes} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
     const {path} = useParams();
+    const {subcategory} = useParams();
 
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
-    const categoryNotes = path ? JSON.parse(localStorage.getItem(path)) : []
+    const categoryNotes = path !== 'home' ? JSON.parse(localStorage.getItem(path))?.all : []
 
-    console.log(categoryNotes)
+    const subCategoryNotes = []
+
+    console.log(subcategory)
 
     for (let key in {...localStorage}) {
         if (key !== 'persist:notes') {
@@ -122,15 +120,17 @@ export const Main = () => {
 
     const onAddToCategoryAccept = values => {
         const alsoAdded = JSON.parse(localStorage.getItem(values.category))
-        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.find(item => item.id === note.id)?.id)
-        localStorage.setItem(values.category, JSON.stringify([...alsoAdded, ...toAdd]))
+        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.all.find(item => item.id === note.id)?.id)
+        localStorage.setItem(values.category, JSON.stringify({
+            all: [...alsoAdded.all, ...toAdd]
+        }))
         setSelectedNotes([])
         setSelectMode(false)
     }
 
     const onCreateCategoryClick = () => {
         const name = prompt('What is category name? ', '')
-        localStorage.setItem(name.toLowerCase(), JSON.stringify([]))
+        localStorage.setItem(name.toLowerCase(), JSON.stringify({all: []}))
         setCounter(counter + 1)
     }
 
@@ -145,17 +145,32 @@ export const Main = () => {
         setEditMode(false)
     }
 
+    const onCreateSubCategoryClick = () => {
+        const name = prompt('Create SubCategory name')
+        const currentData = JSON.parse(localStorage.getItem(path))
+        localStorage.setItem(path, JSON.stringify({all: currentData.all, [name]: []}))
+    }
+
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
-                <Button
-                    text='Create category'
-                    onClick={onCreateCategoryClick}
-                />
-                <Button
-                    text='Delete all notes'
-                    onClick={onDeleteAllClick}
-                />
+                {!path ?
+                    <>
+                        <Button
+                            text='Create category'
+                            onClick={onCreateCategoryClick}
+                        />
+                        <Button
+                            text='Delete all notes'
+                            onClick={onDeleteAllClick}
+                        />
+                    </>
+                    :
+                    <Button
+                        text='Create Subcategory'
+                        onClick={onCreateSubCategoryClick}
+                    />
+                }
                 <Header/>
                 <Navbar
                     items={categories}
@@ -166,6 +181,11 @@ export const Main = () => {
                     onClick={onChangeCategoryClick}
                     onDeleteCategoryClick={onDeleteCategoryClick}
                 />
+                {path ?
+                    <Navbar
+                        items={[{text: 'subcategory1'}]}
+                    />
+                    : null}
                 {selectMode ?
                     <SelectCategoryForm
                         items={categories}
