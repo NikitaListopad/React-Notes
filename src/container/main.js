@@ -4,12 +4,10 @@ import {CreateNoteForm} from "../components/forms/createNoteForm";
 import {useDispatch, useSelector} from "react-redux";
 import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
-import {categories} from "../constants/categoies";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
-import {categoriesSelector} from "../store/categories";
 import {useParams} from "react-router-dom";
-import {get} from 'lodash'
+import {Button} from "../components/elements";
 
 export const Main = () => {
 
@@ -21,8 +19,6 @@ export const Main = () => {
     const [selectMode, setSelectMode] = useState(false)
 
     const {data: notes} = useSelector(notesSelector)
-    const {home, work, school} = useSelector(categoriesSelector)
-    const globalCategories = useSelector(categoriesSelector)
     const dispatch = useDispatch()
 
     const {path} = useParams();
@@ -30,7 +26,7 @@ export const Main = () => {
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
-    const categoryNotes = get(globalCategories, [`${path}`], [])
+    const categoryNotes = path ? JSON.parse(localStorage.getItem(path)) : []
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
@@ -91,15 +87,35 @@ export const Main = () => {
         }
     }
 
+    const categories = [{text: 'All', value: ''}]
+
+    for (let key in {...localStorage}) {
+        if (key !== 'persist:notes') {
+            categories.push({text: key, value: key})
+        }
+    }
+
     const onAddToCategoryAccept = values => {
-        dispatch({type: `ADD_TO_${values.category}`, payload: selectedNotes})
+        const alsoAdded = JSON.parse(localStorage.getItem(values.category))
+        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.find(item => item.id === note.id)?.id)
+        localStorage.setItem(values.category, JSON.stringify([...alsoAdded, ...toAdd]))
         setSelectedNotes([])
         setSelectMode(false)
     }
 
+    const onCreateCategoryClick = () => {
+        const name = prompt('What is category name? ', '')
+        localStorage.setItem(name.toLowerCase(), JSON.stringify([]))
+    }
+
+
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
+                <Button
+                    text='Create category'
+                    onClick={onCreateCategoryClick}
+                />
                 <Header/>
                 <Navbar
                     items={categories}

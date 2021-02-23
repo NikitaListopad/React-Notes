@@ -4,12 +4,11 @@ import {Link} from "react-router-dom";
 
 export const Navbar = props => {
 
-
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between">
             <div>
                 {props.items.map((item, index) =>
-                    <Link to={item.value.toLowerCase()} key={index}>
+                    <Link to={item.value} key={index}>
                         <Button
                             type='button'
                             key={index}
