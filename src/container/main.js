@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/forms/createNoteForm";
 import {useDispatch, useSelector} from "react-redux";
-import {CREATE_NOTE, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
+import {CLEAR_STORE, CREATE_NOTE, DELETE_ALL_NOTES, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
 import {NotesList} from "../components/notes";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
@@ -35,6 +35,8 @@ export const Main = () => {
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
     const categoryNotes = path ? JSON.parse(localStorage.getItem(path)) : []
+
+    console.log(categoryNotes)
 
     for (let key in {...localStorage}) {
         if (key !== 'persist:notes') {
@@ -77,6 +79,11 @@ export const Main = () => {
         }
     }
 
+    const onDeleteAllClick = () => {
+        localStorage.clear()
+        dispatch({type: DELETE_ALL_NOTES})
+    }
+
     const onEditNoteClick = id => {
         setTargetPostId(id)
         setEditMode(true)
@@ -100,6 +107,7 @@ export const Main = () => {
     }
 
     const onCancelCategorySelectClick = () => {
+        setSelectedNotes([])
         setSelectMode(false)
     }
 
@@ -131,6 +139,12 @@ export const Main = () => {
         setCounter(counter + 1)
     }
 
+    const onChangeCategoryClick = () => {
+        setSelectMode(false)
+        setSelectedNotes([])
+        setEditMode(false)
+    }
+
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
@@ -138,13 +152,18 @@ export const Main = () => {
                     text='Create category'
                     onClick={onCreateCategoryClick}
                 />
+                <Button
+                    text='Delete all notes'
+                    onClick={onDeleteAllClick}
+                />
                 <Header/>
                 <Navbar
                     items={categories}
-                    text={!selectMode ? 'Add note to category' : 'Cancel'}
+                    text={!selectMode ? 'Select notes' : 'Cancel'}
                     selectButtonText='Delete category'
                     onSelectCategoryClick={!selectMode ? onSelectCategoryClick : onCancelCategorySelectClick}
                     path={path}
+                    onClick={onChangeCategoryClick}
                     onDeleteCategoryClick={onDeleteCategoryClick}
                 />
                 {selectMode ?

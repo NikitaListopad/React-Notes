@@ -27,7 +27,7 @@ export const SelectCategoryForm = props => {
                            items={props.items}
                            onChange={handleChange}
                            onBlur={handleBlur}
-                           placeholder='Select category'
+                           placeholder='Select category to add'
                     />
                     <Button
                         disabled={!dirty}
