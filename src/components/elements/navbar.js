@@ -8,11 +8,11 @@ export const Navbar = props => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between">
             <div>
                 {props.items.map((item, index) =>
-                    <Link to={item.value} key={index}>
+                    <Link to={!props.url ? item.value : `${props.url}/${item.value}`} key={index}>
                         <Button
                             type='button'
                             key={index}
-                            onClick={props.onClick}
+                            onClick={() => props.onClick(item.value)}
                             text={item.text}
                         />
                     </Link>

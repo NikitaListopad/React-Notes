@@ -7,7 +7,7 @@ function App() {
     return (
         <Router>
             <div className="App">
-                <Route path='/:path?/:subcategory?' component={Main}/>
+                <Route path='/:path?' component={Main}/>
             </div>
         </Router>
     );

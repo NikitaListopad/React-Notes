@@ -6,7 +6,7 @@ import {CREATE_NOTE, DELETE_ALL_NOTES, DELETE_NOTE, EDIT_NOTE, notesSelector} fr
 import {NotesList} from "../components/notes";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
-import {useParams} from "react-router-dom";
+import {useParams, useRouteMatch} from "react-router-dom";
 import {Button} from "../components/elements";
 
 export const Main = () => {
@@ -14,27 +14,25 @@ export const Main = () => {
     const [targetPostId, setTargetPostId] = useState(null)
     const [selectedNotes, setSelectedNotes] = useState([])
     const categories = [{text: 'All', value: ''}]
+    const subCategories = []
 
     const [counter, setCounter] = useState(1)
-
+    const [subCategoryNotes, setSubCategoryNotes] = useState([])
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
+    const [subCategoryIsOpen, setSubCategoryOpen] = useState(false)
 
     const {data: notes} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
     const {path} = useParams();
-    const {subcategory} = useParams();
+    const {url} = useRouteMatch()
 
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
-    const categoryNotes = path !== 'home' ? JSON.parse(localStorage.getItem(path))?.all : []
-
-    const subCategoryNotes = []
-
-    console.log(subcategory)
+    const categoryNotes = !subCategoryIsOpen ? JSON.parse(localStorage.getItem(path))?.All : subCategoryNotes
 
     for (let key in {...localStorage}) {
         if (key !== 'persist:notes') {
@@ -120,9 +118,9 @@ export const Main = () => {
 
     const onAddToCategoryAccept = values => {
         const alsoAdded = JSON.parse(localStorage.getItem(values.category))
-        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.all.find(item => item.id === note.id)?.id)
+        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.All.find(item => item.id === note.id)?.id)
         localStorage.setItem(values.category, JSON.stringify({
-            all: [...alsoAdded.all, ...toAdd]
+            All: [...alsoAdded.All, ...toAdd]
         }))
         setSelectedNotes([])
         setSelectMode(false)
@@ -130,7 +128,7 @@ export const Main = () => {
 
     const onCreateCategoryClick = () => {
         const name = prompt('What is category name? ', '')
-        localStorage.setItem(name.toLowerCase(), JSON.stringify({all: []}))
+        localStorage.setItem(name.toLowerCase(), JSON.stringify({All: []}))
         setCounter(counter + 1)
     }
 
@@ -148,8 +146,32 @@ export const Main = () => {
     const onCreateSubCategoryClick = () => {
         const name = prompt('Create SubCategory name')
         const currentData = JSON.parse(localStorage.getItem(path))
-        localStorage.setItem(path, JSON.stringify({all: currentData.all, [name]: []}))
+        localStorage.setItem(path, JSON.stringify({...currentData, [name]: []}))
     }
+
+    const keyOfSubCategories = () => {
+        for (let key in JSON.parse(localStorage.getItem(path))) {
+            subCategories.push({text: key, value: key})
+        }
+    }
+    keyOfSubCategories()
+
+
+    const takeValueFromNavBar = value => {
+        setSubCategoryOpen(value)
+        const object = JSON.parse(localStorage.getItem(path))
+        for (let key in object) {
+            if (key === value) {
+                setSubCategoryNotes([...object[key]])
+            }
+        }
+    }
+
+    console.log(subCategoryNotes)
+
+    // const toret = Object.entries(JSON.parse(localStorage.getItem(path)))
+
+    // console.log(toret)
 
     return (
         <>
@@ -183,7 +205,10 @@ export const Main = () => {
                 />
                 {path ?
                     <Navbar
-                        items={[{text: 'subcategory1'}]}
+                        items={subCategories}
+                        url={url}
+                        path={path}
+                        onClick={takeValueFromNavBar}
                     />
                     : null}
                 {selectMode ?
