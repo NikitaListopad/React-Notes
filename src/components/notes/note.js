@@ -9,36 +9,42 @@ export const Note = props => {
         <>
             <li key={props.id}
                 className='list-group-item list-group-item-action d-flex justify-content-between'
-                style={props.targetPostId === props.item.id ? {backgroundColor : props.backgroundColor} : null}
+                style={props.targetPost.id === props.item.id ? {backgroundColor: props.backgroundColor} : null}
             >
-                {props.selectMode  ?
-                <div className='form-check'>
-                    <Input type='checkbox'
-                           className='form-check form-check-input'
-                           onChange={() => props.onSelectNoteClick(props.item)}
-                    />
-                </div>
+                {props.selectMode ?
+                    <div className='form-check'>
+                        <Input type='checkbox'
+                               className='form-check form-check-input'
+                               onChange={() => props.onSelectNoteClick(props.item)}
+                        />
+                    </div>
                     : null
                 }
                 <span className={`text-break mx-1 w-75 mr-5 ${props.infoMode ? 'text-muted' : ''}`}>
-                    {(props.targetPostId === props.item.id) && props.infoMode ? `Created at: ${props.item.created_at}` : props.item.content}
+                    {(props.targetPost.id === props.item.id) && props.infoMode ? `Created at: ${props.item.created_at}` : props.item.content}
                     </span>
                 <div className='btn-group'>
                     <Button
-                        text={(props.targetPostId === props.item.id) && props.infoMode ? 'Note' : 'Info'}
-                        disabled={(props.targetPostId !== props.item.id) && props.infoMode}
-                        onClick={() => props.onInfoClick(props.item.id)}
+                        text={(props.targetPost.id === props.item.id) && props.infoMode ? 'Note' : 'Info'}
+                        disabled={(props.targetPost.id !== props.item.id) && props.infoMode}
+                        onClick={() => props.onInfoClick(props.item)}
                     />
-                    <Button
-                        onClick={() => props.onEditNoteClick(props.item.id)}
-                        className='btn btn-outline-primary'
-                        text='Edit Note'
-                    />
-                    <Button
-                        onClick={() => props.onDeleteNoteClick(props.item.id)}
-                        className='btn btn-outline-primary'
-                        text='Delete Note'
-                    />
+                    {!props.subCategory ?
+                        <>
+                            <Button
+                                onClick={() => props.onEditNoteClick(props.item)}
+                                className='btn btn-outline-primary'
+                                text='Edit Note'
+                            />
+                            <Button
+                                onClick={() => props.onDeleteNoteClick(props.item)}
+                                className='btn btn-outline-primary'
+                                text='Delete Note'
+                            />
+                        </>
+                        : null
+                    }
+
                 </div>
             </li>
         </>
