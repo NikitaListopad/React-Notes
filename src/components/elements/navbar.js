@@ -24,10 +24,10 @@ export const Navbar = props => {
                             </Link>
                             :
                             <Button
-                            type='button'
-                            key={index}
-                            onClick={() => props.onClick(item.value)}
-                            text={item.text}
+                                type='button'
+                                key={index}
+                                onClick={() => props.onClick(item.value)}
+                                text={item.text}
                             />
                         }
                     </>

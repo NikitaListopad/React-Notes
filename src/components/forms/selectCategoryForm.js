@@ -14,7 +14,6 @@ export const SelectCategoryForm = props => {
                 props.onSubmit(values)
             }}>
             {({
-                  values,
                   handleChange,
                   handleBlur,
                   handleSubmit,

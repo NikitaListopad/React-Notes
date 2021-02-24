@@ -8,10 +8,10 @@ function App() {
     return (
         <Router>
             <div className="App">
-                    <Route path='/:path?' component={Main}/>
+                <Route path='/:path?' component={Main}/>
             </div>
         </Router>
-);
+    );
 }
 
 export default App;

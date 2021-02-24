@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import {Header} from "./header";
-import {CreateNoteForm} from "../components/forms/createNoteForm";
-import {useDispatch, useSelector} from "react-redux";
+import {CreateNoteForm} from '../components/forms/createNoteForm';
+import {useDispatch, useSelector} from 'react-redux';
 import {
     CREATE_CATEGORY,
     CREATE_NOTE, CREATE_SUBCATEGORY,
@@ -10,12 +9,12 @@ import {
     EDIT_NOTE,
     notesSelector,
     UPDATE_CATEGORY_NOTES, UPDATE_SUBCATEGORY
-} from "../store/notes";
-import {NotesList} from "../components/notes";
-import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
-import {Navbar} from "../components/elements/navbar";
-import {useParams} from "react-router-dom";
-import {Button} from "../components/elements";
+} from '../store/notes';
+import {NotesList} from '../components/notes';
+import {SelectCategoryForm} from '../components/forms/selectCategoryForm';
+import {Navbar} from '../components/elements/navbar';
+import {useParams} from 'react-router-dom';
+import {Button} from '../components/elements';
 
 export const Main = () => {
 
@@ -211,7 +210,6 @@ export const Main = () => {
                         onClick={onCreateSubCategoryClick}
                     />
                 }
-                <Header/>
                 <Navbar
                     items={categories}
                     text={!selectMode ? 'Select notes' : 'Cancel'}

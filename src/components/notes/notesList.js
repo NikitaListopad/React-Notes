@@ -3,7 +3,7 @@ import {Note} from "./note";
 
 export const NotesList = props => {
 
-    return(
+    return (
         <>
             <ul className='list-group'>
                 {
