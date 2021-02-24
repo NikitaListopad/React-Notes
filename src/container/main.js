@@ -52,7 +52,7 @@ export const Main = () => {
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const result = await dispatch({
             type: CREATE_NOTE,
-            payload: {id: id, title: values.title, content: values.content, created_at: currentTime}
+            payload: {id: id, title: values.title, content: values.content, created_at: currentTime, color: ''}
         })
         if (result) {
             resetForm({values: ''})
@@ -60,7 +60,7 @@ export const Main = () => {
     }
 
     const onEditNoteSubmit = (values, {resetForm}) => {
-        dispatch({type: EDIT_NOTE, payload: {...targetPost, content: values.content}})
+        dispatch({type: EDIT_NOTE, payload: {...notes.find(note => note.id === targetPost.id), content: values.content}})
         for (let i = 0; i < categories.length; i++) {
             if (categories[i].data.find(item => item.id === targetPost.id)) {
                 const subcategories = categories[i].subcategories
