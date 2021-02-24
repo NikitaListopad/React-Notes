@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {CreateNoteForm} from '../components/forms/createNoteForm';
-import {useDispatch, useSelector} from 'react-redux';
+import {shallowEqual, useDispatch, useSelector} from 'react-redux';
 import {
     CREATE_CATEGORY,
     CREATE_NOTE, CREATE_SUBCATEGORY,
@@ -33,7 +33,7 @@ export const Main = () => {
 
     const {data: notes} = useSelector(notesSelector)
     const {categories} = useSelector(notesSelector)
-    const {subcategories} = useSelector(notesSelector)
+    const {subcategories} = useSelector(notesSelector, shallowEqual)
     const dispatch = useDispatch()
 
     const {path} = useParams();
@@ -61,17 +61,39 @@ export const Main = () => {
 
     const onEditNoteSubmit = (values, {resetForm}) => {
         dispatch({type: EDIT_NOTE, payload: {...targetPost, content: values.content}})
-        if (path) {
-            dispatch({
-                type: UPDATE_CATEGORY_NOTES, payload: {
-                    ...currentCategory,
-                    data: categoryNotes.map(note => note.id === targetPost.id
-                        ?
-                        {id: targetPost.id, content: values.content}
-                        :
-                        note)
+        for (let i = 0; i < categories.length; i++) {
+            if (categories[i].data.find(item => item.id === targetPost.id)) {
+                const subcategories = categories[i].subcategories
+                for (let i = 0; i < subcategories.length; i++) {
+                    dispatch({
+                        type: UPDATE_SUBCATEGORY,
+                        payload: {
+                            ...subcategories[i],
+                            data: subcategories[i].data.map(item => item.id === targetPost.id ? {
+                                ...item,
+                                content: values.content
+                            } : item)
+                        }
+                    })
                 }
-            })
+                dispatch({
+                    type: UPDATE_CATEGORY_NOTES,
+                    payload: {
+                        ...categories[i],
+                        data: categories[i].data.map(item => item.id === targetPost.id ? {
+                            ...item,
+                            content: values.content
+                        } : item),
+                        subcategories: categories[i].subcategories.map(item => item.id === subcategories[i].id ? {
+                            ...subcategories[i],
+                            data: subcategories[i].data.map(item => item.id === targetPost.id ? {
+                                ...item,
+                                content: values.content
+                            } : item)
+                        } : item)
+                    }
+                })
+            }
         }
         resetForm({values: ''})
         setEditMode(false)
@@ -79,8 +101,9 @@ export const Main = () => {
         setInfoMode(false)
     }
 
-    const onDeleteNoteClick = id => {
-        dispatch({type: DELETE_NOTE, payload: id})
+    const onDeleteNoteClick = item => {
+        dispatch({type: DELETE_NOTE, payload: item.id})
+
     }
 
     const onDeleteAllClick = () => {
@@ -95,7 +118,7 @@ export const Main = () => {
     }
 
     const onInfoButtonClick = item => {
-        setBackGroundColor('#e8dcdc')
+        setBackGroundColor('#fcfafa')
         setTargetPost(item)
         setInfoMode(true)
         setEditMode(false)
@@ -140,7 +163,10 @@ export const Main = () => {
         const itemsId = categories.map(category => category.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const name = prompt('What is category name? ', '')
-        dispatch({type: CREATE_CATEGORY, payload: {id: id, text: name, value: name, data: [], subcategories: []}})
+        dispatch({
+            type: CREATE_CATEGORY,
+            payload: {id: id, text: name, value: name, data: [], subcategories: []}
+        })
         setCounter(counter + 1)
     }
 
@@ -175,8 +201,12 @@ export const Main = () => {
     }
 
     const onAddToSubCategoriesAccept = values => {
+        console.log(values)
         const subcategory = subcategories.find(item => item.value === values.category)
-        dispatch({type: UPDATE_SUBCATEGORY, payload: {...subcategory, data: selectedNotes}})
+        dispatch({
+            type: UPDATE_SUBCATEGORY,
+            payload: {...subcategory, data: [...subcategory.data, ...selectedNotes]}
+        })
         dispatch({
             type: UPDATE_CATEGORY_NOTES, payload: {
                 ...currentCategory,
