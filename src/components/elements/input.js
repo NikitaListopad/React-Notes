@@ -9,7 +9,7 @@ export const Input = props => {
                    id={props.id}
                    onBlur={props.onBlur}
                    value={props.value}
-                   className={props.className ? props.className : (`form-control ${props.className ? props.className : ''}`)}
+                   className={props.className ? props.className : `form-control`}
                    onChange={props.onChange}
                    placeholder={props.placeholder}
                    maxLength={props.maxlength}

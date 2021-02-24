@@ -16,6 +16,8 @@ import {Navbar} from '../components/elements/navbar';
 import {useParams} from 'react-router-dom';
 import {Button} from '../components/elements';
 
+const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {text: 'Orange', value: 'fcbd81'}]
+
 export const Main = () => {
 
     const [targetPost, setTargetPost] = useState(false)
@@ -52,7 +54,7 @@ export const Main = () => {
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const result = await dispatch({
             type: CREATE_NOTE,
-            payload: {id: id, title: values.title, content: values.content, created_at: currentTime, color: ''}
+            payload: {id: id, title: values.title, content: values.content, created_at: currentTime, color: `#${values.color}`}
         })
         if (result) {
             resetForm({values: ''})
@@ -291,6 +293,7 @@ export const Main = () => {
                         onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
                         text={!editMode ? 'Create' : 'Accept edit'}
                         editMode={editMode}
+                        colors={colors}
                     />
                     :
                     <>

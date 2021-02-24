@@ -9,7 +9,8 @@ export const Note = props => {
         <>
             <li key={props.id}
                 className='list-group-item d-flex flex-md-column pt-2'
-                style={{backgroundColor: props.item.color}}
+                style={props.targetPost.id === props.item.id ? {backgroundColor: props.backgroundColor} : null}
+
             >
                 <p className='m-0 p-0 border-bottom'><em>{props.item.title}</em></p>
                 <div className='list-group-item-action d-flex justify-content-between mt-3'>
@@ -22,7 +23,9 @@ export const Note = props => {
                         </div>
                         : null
                     }
-                    <span className={`text-break mx-1 w-75 mr-5 ${props.infoMode ? 'text-muted' : ''}`}>
+                    <span className={`rounded p-2 text-break mx-1 w-75 mr-5 ${props.infoMode ? 'text-muted' : ''}`}
+                          style={{backgroundColor: props.item.color}}
+                    >
                     {(props.targetPost.id === props.item.id) && props.infoMode ? `Created at: ${props.item.created_at}` : props.item.content}
                     </span>
                     <div className='btn-group'>
