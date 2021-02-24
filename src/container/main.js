@@ -2,7 +2,15 @@ import React, {useEffect, useState} from 'react'
 import {Header} from "./header";
 import {CreateNoteForm} from "../components/forms/createNoteForm";
 import {useDispatch, useSelector} from "react-redux";
-import {CLEAR_STORE, CREATE_NOTE, DELETE_ALL_NOTES, DELETE_NOTE, EDIT_NOTE, notesSelector} from "../store/notes";
+import {
+    CREATE_CATEGORY,
+    CREATE_NOTE, CREATE_SUBCATEGORY,
+    DELETE_ALL_NOTES,
+    DELETE_NOTE,
+    EDIT_NOTE,
+    notesSelector,
+    UPDATE_CATEGORY_NOTES, UPDATE_SUBCATEGORY
+} from "../store/notes";
 import {NotesList} from "../components/notes";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
 import {Navbar} from "../components/elements/navbar";
@@ -11,22 +19,22 @@ import {Button} from "../components/elements";
 
 export const Main = () => {
 
-    const [targetPostId, setTargetPostId] = useState(null)
+    const [targetPost, setTargetPost] = useState(false)
     const [selectedNotes, setSelectedNotes] = useState([])
-    const categories = [{text: 'All', value: ''}]
+    const [categoryNotes, setCategoryNotes] = useState([])
+    const [currentCategory, setCurrentCategory] = useState({})
 
     const [counter, setCounter] = useState(1)
 
+    const [backgroundColor, setBackGroundColor] = useState(false)
+    const [onSubCategoryClick, setOnSubCategoryClick] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
 
-
-    useEffect(() => {
-        console.log('upd')
-    }, [counter]);
-
     const {data: notes} = useSelector(notesSelector)
+    const {categories} = useSelector(notesSelector)
+    const {subcategories} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
     const {path} = useParams();
@@ -34,15 +42,11 @@ export const Main = () => {
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
-    const categoryNotes = path ? JSON.parse(localStorage.getItem(path)) : []
 
-    console.log(categoryNotes)
-
-    for (let key in {...localStorage}) {
-        if (key !== 'persist:notes') {
-            categories.push({text: key, value: key})
-        }
-    }
+    useEffect(() => {
+        setCurrentCategory((categories.find(category => category.value === path)) || {})
+        setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
+    }, [path, categories]);
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
@@ -57,26 +61,27 @@ export const Main = () => {
     }
 
     const onEditNoteSubmit = (values, {resetForm}) => {
-        dispatch({type: EDIT_NOTE, payload: {id: targetPostId, content: values.content}})
+        dispatch({type: EDIT_NOTE, payload: {...targetPost, content: values.content}})
         if (path) {
-            const currentCategoryNotes = JSON.parse(localStorage.getItem(path))
-            localStorage.setItem(path, JSON.stringify(currentCategoryNotes.map(note => note.id === targetPostId ? {
-                id: targetPostId,
-                content: values.content
-            } : note)))
+            dispatch({
+                type: UPDATE_CATEGORY_NOTES, payload: {
+                    ...currentCategory,
+                    data: categoryNotes.map(note => note.id === targetPost.id
+                        ?
+                        {id: targetPost.id, content: values.content}
+                        :
+                        note)
+                }
+            })
         }
         resetForm({values: ''})
         setEditMode(false)
-        setTargetPostId(null)
+        setTargetPost(false)
         setInfoMode(false)
     }
 
     const onDeleteNoteClick = id => {
         dispatch({type: DELETE_NOTE, payload: id})
-        if (path) {
-            const currentCategoryNotes = JSON.parse(localStorage.getItem(path))
-            localStorage.setItem(path, JSON.stringify(currentCategoryNotes.filter(note => note.id !== id)))
-        }
     }
 
     const onDeleteAllClick = () => {
@@ -84,20 +89,22 @@ export const Main = () => {
         dispatch({type: DELETE_ALL_NOTES})
     }
 
-    const onEditNoteClick = id => {
-        setTargetPostId(id)
+    const onEditNoteClick = item => {
+        setTargetPost(item)
         setEditMode(true)
         setInfoMode(false)
     }
 
-    const onInfoButtonClick = id => {
-        setTargetPostId(id)
+    const onInfoButtonClick = item => {
+        setBackGroundColor('#e8dcdc')
+        setTargetPost(item)
         setInfoMode(true)
         setEditMode(false)
     }
 
-    const onNoteButtonClick = id => {
-        if (id === targetPostId) {
+    const onNoteButtonClick = item => {
+        setBackGroundColor(false)
+        if (item.id === targetPost.id) {
             setInfoMode(false)
         }
     }
@@ -121,41 +128,89 @@ export const Main = () => {
     }
 
     const onAddToCategoryAccept = values => {
-        const alsoAdded = JSON.parse(localStorage.getItem(values.category))
-        const toAdd = selectedNotes.filter(note => note.id !== alsoAdded.find(item => item.id === note.id)?.id)
-        localStorage.setItem(values.category, JSON.stringify([...alsoAdded, ...toAdd]))
+        const category = categories.find(item => item.value === values.category)
+        dispatch({
+            type: UPDATE_CATEGORY_NOTES,
+            payload: {...category, data: selectedNotes}
+        })
         setSelectedNotes([])
         setSelectMode(false)
     }
 
     const onCreateCategoryClick = () => {
+        const itemsId = categories.map(category => category.id)
+        const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const name = prompt('What is category name? ', '')
-        localStorage.setItem(name.toLowerCase(), JSON.stringify([]))
+        dispatch({type: CREATE_CATEGORY, payload: {id: id, text: name, value: name, data: [], subcategories: []}})
         setCounter(counter + 1)
     }
 
     const onDeleteCategoryClick = () => {
-        localStorage.removeItem(path)
         setCounter(counter + 1)
     }
 
     const onChangeCategoryClick = () => {
+        setOnSubCategoryClick(false)
+        setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
         setSelectMode(false)
         setSelectedNotes([])
         setEditMode(false)
     }
 
+    const onCreateSubCategoryClick = () => {
+        const name = prompt('Create SubCategory name')
+        const itemsId = subcategories.map(subcategory => subcategory.id)
+        const id = !itemsId[0] ? 1 : itemsId[0] + 1
+        const subcategory = {id: id, text: name, value: name, data: []}
+        dispatch({
+            type: UPDATE_CATEGORY_NOTES,
+            payload: {...currentCategory, subcategories: [...currentCategory.subcategories, subcategory]}
+        })
+        dispatch({
+            type: CREATE_SUBCATEGORY, payload: subcategory
+        })
+    }
+    const takeValueFromNavBar = value => {
+        setOnSubCategoryClick(true)
+        setCategoryNotes((currentCategory.subcategories.find(item => item.value === value)?.data) || [])
+    }
+
+    const onAddToSubCategoriesAccept = values => {
+        const subcategory = subcategories.find(item => item.value === values.category)
+        dispatch({type: UPDATE_SUBCATEGORY, payload: {...subcategory, data: selectedNotes}})
+        dispatch({
+            type: UPDATE_CATEGORY_NOTES, payload: {
+                ...currentCategory,
+                subcategories: currentCategory.subcategories.map(item => item.id === subcategory.id ? {
+                    ...subcategory,
+                    data: selectedNotes
+                } : item)
+            }
+        })
+        setSelectedNotes([])
+        setSelectMode(false)
+    }
+
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
-                <Button
-                    text='Create category'
-                    onClick={onCreateCategoryClick}
-                />
-                <Button
-                    text='Delete all notes'
-                    onClick={onDeleteAllClick}
-                />
+                {!path ?
+                    <>
+                        <Button
+                            text='Create category'
+                            onClick={onCreateCategoryClick}
+                        />
+                        <Button
+                            text='Delete all notes'
+                            onClick={onDeleteAllClick}
+                        />
+                    </>
+                    :
+                    <Button
+                        text='Create Subcategory'
+                        onClick={onCreateSubCategoryClick}
+                    />
+                }
                 <Header/>
                 <Navbar
                     items={categories}
@@ -166,10 +221,19 @@ export const Main = () => {
                     onClick={onChangeCategoryClick}
                     onDeleteCategoryClick={onDeleteCategoryClick}
                 />
+                {path ?
+                    <Navbar
+                        items={currentCategory.subcategories || []}
+                        path={path}
+                        onClick={takeValueFromNavBar}
+                        subCategory={true}
+                    />
+                    : null
+                }
                 {selectMode ?
                     <SelectCategoryForm
-                        items={categories}
-                        onSubmit={onAddToCategoryAccept}
+                        items={!path ? categories : currentCategory.subcategories}
+                        onSubmit={!path ? onAddToCategoryAccept : onAddToSubCategoriesAccept}
                     />
                     : null
                 }
@@ -196,8 +260,10 @@ export const Main = () => {
                     items={!path ? notes : categoryNotes}
                     infoMode={infoMode}
                     onInfoClick={!infoMode ? onInfoButtonClick : onNoteButtonClick}
-                    targetPostId={targetPostId}
+                    targetPost={targetPost}
                     onSelectNoteClick={onSelectNoteClick}
+                    backgroundColor={backgroundColor}
+                    subCategory={onSubCategoryClick}
                 />
             </div>
         </>
