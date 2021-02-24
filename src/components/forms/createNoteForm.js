@@ -7,7 +7,8 @@ export const CreateNoteForm = props => {
     return (
         <Formik
             initialValues={{
-                content: ''
+                content: '',
+                title: ''
             }}
             validateOnBlur
             onSubmit={(values, {resetForm}) => {

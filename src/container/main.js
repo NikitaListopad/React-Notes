@@ -52,7 +52,7 @@ export const Main = () => {
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const result = await dispatch({
             type: CREATE_NOTE,
-            payload: {id: id, content: values.content, created_at: currentTime}
+            payload: {id: id, title: values.title, content: values.content, created_at: currentTime}
         })
         if (result) {
             resetForm({values: ''})
@@ -103,11 +103,32 @@ export const Main = () => {
 
     const onDeleteNoteClick = item => {
         dispatch({type: DELETE_NOTE, payload: item.id})
-
+        for (let i = 0; i < categories.length; i++) {
+            const subCategoryWithNote = categories[i].subcategories.find(category =>
+                category.data.filter(note => note.id !== item.id))
+            if (subCategoryWithNote) {
+                dispatch({
+                    type: UPDATE_CATEGORY_NOTES,
+                    payload: {
+                        ...categories[i],
+                        data: categories[i].data.filter(note => note.id !== item.id),
+                        subcategories: categories[i].subcategories.map(category => category.id === subCategoryWithNote.id ? {
+                            ...category,
+                            data: category.data.filter(note => note.id !== item.id)
+                        } : category)
+                    }
+                })
+            }
+        }
+        for (let a = 0; a < subcategories.length; a++) {
+            dispatch({
+                type: UPDATE_SUBCATEGORY,
+                payload: {...subcategories[a], data: subcategories[a].data.filter(note => note.id !== item.id)}
+            })
+        }
     }
 
     const onDeleteAllClick = () => {
-        localStorage.clear()
         dispatch({type: DELETE_ALL_NOTES})
     }
 
@@ -195,13 +216,13 @@ export const Main = () => {
             type: CREATE_SUBCATEGORY, payload: subcategory
         })
     }
+
     const takeValueFromNavBar = value => {
         setOnSubCategoryClick(true)
         setCategoryNotes((currentCategory.subcategories.find(item => item.value === value)?.data) || [])
     }
 
     const onAddToSubCategoriesAccept = values => {
-        console.log(values)
         const subcategory = subcategories.find(item => item.value === values.category)
         dispatch({
             type: UPDATE_SUBCATEGORY,
