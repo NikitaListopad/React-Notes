@@ -12,7 +12,7 @@ export const Navbar = props => {
                     : null
                 }
                 {props.items.map((item, index) =>
-                    <Link to={!props.url ? item.value : `${props.url}/${item.value}`} key={index}>
+                    <Link to={item.value} key={index}>
                         <Button
                             type='button'
                             key={index}

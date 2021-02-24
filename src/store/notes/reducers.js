@@ -1,4 +1,12 @@
-import {DELETE_ALL_NOTES, CREATE_NOTE, DELETE_NOTE, EDIT_NOTE} from "./actions";
+import {
+    DELETE_ALL_NOTES,
+    CREATE_NOTE,
+    DELETE_NOTE,
+    EDIT_NOTE,
+    CREATE_CATEGORY,
+    DELETE_CATEGORY,
+    UPDATE_CATEGORY_NOTES, CREATE_SUBCATEGORY
+} from "./actions";
 import {getInitialState} from "../../helpers/redux";
 
 const initialState = getInitialState([])
@@ -19,12 +27,31 @@ export const notes = (state = initialState, action) => {
                 ...state,
                 data: state.data.map(note => note.id === action.payload.id ? action.payload : note)
             }
+        case CREATE_CATEGORY:
+            return {
+                ...state,
+                categories: [action.payload, ...state.categories]
+            }
+        case DELETE_CATEGORY:
+            return {
+                ...state,
+                categories: state.categories.filter(category => category.value !== action.payload.value)
+            }
         case DELETE_ALL_NOTES:
             return {
                 ...state,
                 data: []
             }
-
+        case UPDATE_CATEGORY_NOTES:
+            return {
+                ...state,
+                categories: state.categories.map(category => category.id === action.payload.id ? action.payload : category)
+            }
+        case CREATE_SUBCATEGORY:
+            return {
+                ...state,
+                subcategories: [action.payload, ...state.subcategories]
+            }
         default: {
             return state
         }
