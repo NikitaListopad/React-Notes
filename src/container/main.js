@@ -9,7 +9,7 @@ import {
     DELETE_NOTE,
     EDIT_NOTE,
     notesSelector,
-    UPDATE_CATEGORY_NOTES
+    UPDATE_CATEGORY_NOTES, UPDATE_SUBCATEGORY
 } from "../store/notes";
 import {NotesList} from "../components/notes";
 import {SelectCategoryForm} from "../components/forms/selectCategoryForm";
@@ -21,15 +21,13 @@ export const Main = () => {
 
     const [targetPostId, setTargetPostId] = useState(null)
     const [selectedNotes, setSelectedNotes] = useState([])
-    const [subCategories, setSubCategories] = useState([])
     const [categoryNotes, setCategoryNotes] = useState([])
-    const [subCategoriesVisible, setSubCategoriesVisible] = useState([])
     const [currentCategory, setCurrentCategory] = useState({})
-
-    const [backgroundColor, setBackGroundColor] = useState(false)
 
     const [counter, setCounter] = useState(1)
 
+    const [backgroundColor, setBackGroundColor] = useState(false)
+    const [onSubCategoryClick, setOnSubCategoryClick] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
@@ -48,12 +46,7 @@ export const Main = () => {
     useEffect(() => {
         setCurrentCategory((categories.find(category => category.value === path)) || {})
         setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
-        setSubCategories((categories.find(category => category.value === path)?.subcategories) || [])
-        setSubCategoriesVisible((currentCategory?.subcategories) || [])
-        setSubCategoriesVisible((currentCategory?.subcategories) || [])
     }, [path, categories]);
-
-    console.log(categoryNotes)
 
     const onCreateNoteSubmit = async (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
@@ -104,12 +97,14 @@ export const Main = () => {
     }
 
     const onInfoButtonClick = id => {
+        setBackGroundColor('#e8dcdc')
         setTargetPostId(id)
         setInfoMode(true)
         setEditMode(false)
     }
 
     const onNoteButtonClick = id => {
+        setBackGroundColor(false)
         if (id === targetPostId) {
             setInfoMode(false)
         }
@@ -134,10 +129,7 @@ export const Main = () => {
     }
 
     const onAddToCategoryAccept = values => {
-        const itemsId = categories.map(category => category.id)
-        const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const category = categories.find(item => item.value === values.category)
-        console.log(category)
         dispatch({
             type: UPDATE_CATEGORY_NOTES,
             payload: {...category, data: selectedNotes}
@@ -159,6 +151,7 @@ export const Main = () => {
     }
 
     const onChangeCategoryClick = () => {
+        setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
         setSelectMode(false)
         setSelectedNotes([])
         setEditMode(false)
@@ -182,9 +175,17 @@ export const Main = () => {
     }
 
     const onAddToSubCategoriesAccept = values => {
-        const subcategory = currentCategory.subcategories.find(item => item.value === values.category)
-
-        console.log(values)
+        const subcategory = subcategories.find(item => item.value === values.category)
+        dispatch({type: UPDATE_SUBCATEGORY, payload: {...subcategory, data: selectedNotes}})
+        dispatch({
+            type: UPDATE_CATEGORY_NOTES, payload: {
+                ...currentCategory,
+                subcategories: currentCategory.subcategories.map(item => item.id === subcategory.id ? {
+                    ...subcategory,
+                    data: selectedNotes
+                } : item)
+            }
+        })
         setSelectedNotes([])
         setSelectMode(false)
     }
@@ -221,7 +222,7 @@ export const Main = () => {
                 />
                 {path ?
                     <Navbar
-                        items={subCategoriesVisible}
+                        items={currentCategory.subcategories || []}
                         path={path}
                         onClick={takeValueFromNavBar}
                         subCategory={true}
@@ -260,6 +261,7 @@ export const Main = () => {
                     onInfoClick={!infoMode ? onInfoButtonClick : onNoteButtonClick}
                     targetPostId={targetPostId}
                     onSelectNoteClick={onSelectNoteClick}
+                    backgroundColor={backgroundColor}
                 />
             </div>
         </>

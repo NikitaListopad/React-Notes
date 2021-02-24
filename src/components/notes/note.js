@@ -7,7 +7,10 @@ export const Note = props => {
 
     return (
         <>
-            <li key={props.id} className='list-group-item list-group-item-action d-flex justify-content-between'>
+            <li key={props.id}
+                className='list-group-item list-group-item-action d-flex justify-content-between'
+                style={props.targetPostId === props.item.id ? {backgroundColor : props.backgroundColor} : null}
+            >
                 {props.selectMode  ?
                 <div className='form-check'>
                     <Input type='checkbox'

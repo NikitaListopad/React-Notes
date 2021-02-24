@@ -9,6 +9,7 @@ export const NotesList = props => {
                 {
                     props.items.map(item => (
                         <Note
+                            backgroundColor={props.backgroundColor}
                             onDeleteNoteClick={props.onDeleteNoteClick}
                             onEditNoteClick={props.onEditNoteClick}
                             item={item}
