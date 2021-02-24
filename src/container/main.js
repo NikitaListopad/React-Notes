@@ -290,6 +290,7 @@ export const Main = () => {
                     <CreateNoteForm
                         onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
                         text={!editMode ? 'Create' : 'Accept edit'}
+                        editMode={editMode}
                     />
                     :
                     <>

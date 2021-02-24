@@ -24,6 +24,17 @@ export const CreateNoteForm = props => {
                   dirty
               }) => (
                 <div className='note-form'>
+                    {!props.editMode ?
+                        <Field as={Input}
+                               name='title'
+                               type='text'
+                               value={values ? values.title : ''}
+                               placeholder='Add title'
+                               onChange={handleChange}
+                               onBlur={handleBlur}
+                        />
+                        : null
+                    }
                     <Field as={Input}
                            name='content'
                            type='text'
