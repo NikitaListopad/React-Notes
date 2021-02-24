@@ -6,7 +6,7 @@ import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
     UPDATE_CATEGORY_NOTES, CREATE_SUBCATEGORY, UPDATE_SUBCATEGORY
-} from "./actions";
+} from "./constants";
 import {getInitialState} from "../../helpers/redux";
 
 const initialState = getInitialState([])
