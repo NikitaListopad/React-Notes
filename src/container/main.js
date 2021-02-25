@@ -61,13 +61,16 @@ export const Main = () => {
                 title: values.title,
                 content: values.content,
                 created_at: currentTime,
-                color: `#${values.color}`
+                color: `#${values.color}`,
+                labels: values.labels
             }
         })
         if (result) {
             resetForm({values: ''})
         }
     }
+
+    console.log(notes)
 
     const onEditNoteSubmit = (values, {resetForm}) => {
         dispatch({

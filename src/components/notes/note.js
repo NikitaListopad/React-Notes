@@ -52,6 +52,8 @@ export const Note = props => {
 
                     </div>
                 </div>
+                <p className='m-0 mt-3 text-left'><span className='text-muted mr-5'>Labels:</span>{props.item.labels.map(label => <span key={label.id}>&ensp;{label.value}</span>)}
+                </p>
             </li>
         </>
     )

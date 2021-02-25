@@ -85,7 +85,7 @@ export const CreateNoteForm = props => {
                         <div className='container-md border'>
                             <>
                                 {values.labels.length <= 0 ?
-                                    <span className='text-muted'>Add labels to your note</span>
+                                    <span className='text-muted'>Use double click to add labels for your Note</span>
                                     :
                                     values.labels.map(label =>
                                         <span key={label.id}>&ensp;{label.value}</span>
