@@ -4,7 +4,6 @@ import {Button, Input} from "../elements";
 
 export const Note = props => {
 
-
     return (
         <>
             <li key={props.id}

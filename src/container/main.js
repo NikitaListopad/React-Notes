@@ -1,27 +1,22 @@
 import React, {useEffect, useState} from 'react'
-import {CreateNoteForm} from '../components/forms/createNoteForm';
 import {useDispatch, useSelector} from 'react-redux';
+import {useParams} from 'react-router-dom';
 import {
-    CREATE_CATEGORY, CREATE_LABELS,
-    CREATE_NOTE, CREATE_SUBCATEGORY,
+    createNoteAction,
     DELETE_ALL_NOTES,
-    DELETE_NOTE,
-    EDIT_NOTE,
+    deleteNoteAction,
     notesSelector,
-    UPDATE_CATEGORY_NOTES, UPDATE_SUBCATEGORY
+    onCreateCategoryAction,
+    onCreateLabelAction,
+    onEditNoteAction,
+    onSubCategoryUpdateAction,
+    onUpdateCategoryAction,
 } from '../store/notes';
 import {NotesList} from '../components/notes';
-import {SelectCategoryForm} from '../components/forms/selectCategoryForm';
-import {Navbar} from '../components/elements/navbar';
-import {useParams} from 'react-router-dom';
-import {Button} from '../components/elements';
-import {noteValidation} from "../validationShema/note";
-import {labelValidation} from "../validationShema/label";
-
-const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {
-    text: 'Orange',
-    value: 'fcbd81'
-}, {text: 'Empty', value: 'no'}]
+import {Button, Navbar} from '../components/elements';
+import {noteValidation, labelValidation} from "../validationShema";
+import {colors} from "../constants/colors";
+import {CreateNoteForm, SelectCategoryForm} from "../components/forms";
 
 export const Main = () => {
 
@@ -46,70 +41,20 @@ export const Main = () => {
     const currentDate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
     const currentTime = new Date().toJSON().slice(11, 19) + ` ${currentDate}`
 
-
     useEffect(() => {
         setCurrentCategory((categories.find(category => category.value === path)) || {})
         setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
     }, [path, categories]);
 
-    const onCreateNoteSubmit = async (values, {resetForm}) => {
+    const onCreateNoteSubmit = (values, {resetForm}) => {
         const itemsId = notes.map(note => note.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
-        const result = await dispatch({
-            type: CREATE_NOTE,
-            payload: {
-                id: id,
-                title: values.title,
-                content: values.content,
-                created_at: currentTime,
-                color: `#${values.color}`,
-                labels: values.labels
-            }
-        })
-        if (result) {
-            resetForm({values: ''})
-        }
+        dispatch(createNoteAction(values, currentTime, notes, id))
+        resetForm({values: ''})
     }
 
     const onEditNoteSubmit = (values, {resetForm}) => {
-        dispatch({
-            type: EDIT_NOTE,
-            payload: {...notes.find(note => note.id === targetPost.id), content: values.content}
-        })
-        for (let i = 0; i < categories.length; i++) {
-            if (categories[i].data.find(item => item.id === targetPost.id)) {
-                const subcategories = categories[i].subcategories
-                for (let i = 0; i < subcategories.length; i++) {
-                    dispatch({
-                        type: UPDATE_SUBCATEGORY,
-                        payload: {
-                            ...subcategories[i],
-                            data: subcategories[i].data.map(item => item.id === targetPost.id ? {
-                                ...item,
-                                content: values.content
-                            } : item)
-                        }
-                    })
-                }
-                dispatch({
-                    type: UPDATE_CATEGORY_NOTES,
-                    payload: {
-                        ...categories[i],
-                        data: categories[i].data.map(item => item.id === targetPost.id ? {
-                            ...item,
-                            content: values.content
-                        } : item),
-                        subcategories: categories[i].subcategories.map(item => item.id === subcategories[i].id ? {
-                            ...subcategories[i],
-                            data: subcategories[i].data.map(item => item.id === targetPost.id ? {
-                                ...item,
-                                content: values.content
-                            } : item)
-                        } : item)
-                    }
-                })
-            }
-        }
+        dispatch(onEditNoteAction(values, targetPost))
         resetForm({values: ''})
         setEditMode(false)
         setTargetPost(false)
@@ -117,28 +62,7 @@ export const Main = () => {
     }
 
     const onDeleteNoteClick = item => {
-        dispatch({type: DELETE_NOTE, payload: item.id})
-        for (let i = 0; i < categories.length; i++) {
-            const subCategoryWithNote = categories[i].subcategories.find(category =>
-                category.data.filter(note => note.id !== item.id))
-            dispatch({
-                type: UPDATE_CATEGORY_NOTES,
-                payload: {
-                    ...categories[i],
-                    data: categories[i].data.filter(note => note.id !== item.id),
-                    subcategories: categories[i].subcategories.map(category => category.id === subCategoryWithNote.id ? {
-                        ...category,
-                        data: category.data.filter(note => note.id !== item.id)
-                    } : category)
-                }
-            })
-        }
-        for (let a = 0; a < subcategories.length; a++) {
-            dispatch({
-                type: UPDATE_SUBCATEGORY,
-                payload: {...subcategories[a], data: subcategories[a].data.filter(note => note.id !== item.id)}
-            })
-        }
+        dispatch(deleteNoteAction(item))
     }
 
     const onDeleteAllClick = () => {
@@ -183,11 +107,7 @@ export const Main = () => {
     }
 
     const onAddToCategoryAccept = values => {
-        const category = categories.find(item => item.value === values.category)
-        dispatch({
-            type: UPDATE_CATEGORY_NOTES,
-            payload: {...category, data: selectedNotes}
-        })
+        dispatch(onUpdateCategoryAction(values, selectedNotes))
         setSelectedNotes([])
         setSelectMode(false)
     }
@@ -201,17 +121,13 @@ export const Main = () => {
         const itemsId = categories.map(category => category.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const isValid = []
-
         for (let i = 0; i < categories.length; i++) {
             if (categories[i].value === values.content) {
                 isValid.push(1)
             }
         }
         if (isValid.length <= 0) {
-            dispatch({
-                type: CREATE_CATEGORY,
-                payload: {id: id, text: values.content, value: values.content, data: [], subcategories: []}
-            })
+            dispatch(onCreateCategoryAction(id, values))
             setCreatedWindow(false)
             setCategoryCreating(false)
         } else {
@@ -236,13 +152,7 @@ export const Main = () => {
         const itemsId = subcategories.map(subcategory => subcategory.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const subcategory = {id: id, text: name, value: name, data: []}
-        dispatch({
-            type: UPDATE_CATEGORY_NOTES,
-            payload: {...currentCategory, subcategories: [...currentCategory.subcategories, subcategory]}
-        })
-        dispatch({
-            type: CREATE_SUBCATEGORY, payload: subcategory
-        })
+        dispatch(onCreateSubCategoryClick(currentCategory, subcategory))
     }
 
     const takeValueFromNavBar = value => {
@@ -252,19 +162,7 @@ export const Main = () => {
 
     const onAddToSubCategoriesAccept = values => {
         const subcategory = subcategories.find(item => item.value === values.category)
-        dispatch({
-            type: UPDATE_SUBCATEGORY,
-            payload: {...subcategory, data: [...subcategory.data, ...selectedNotes]}
-        })
-        dispatch({
-            type: UPDATE_CATEGORY_NOTES, payload: {
-                ...currentCategory,
-                subcategories: currentCategory.subcategories.map(item => item.id === subcategory.id ? {
-                    ...subcategory,
-                    data: selectedNotes
-                } : item)
-            }
-        })
+        dispatch(onSubCategoryUpdateAction(subcategory, currentCategory, selectedNotes))
         setSelectedNotes([])
         setSelectMode(false)
     }
@@ -285,7 +183,7 @@ export const Main = () => {
         }
         const id = ids.length <= 0 ? 1 : ids[0] + 1
         if (isValid.length <= 0) {
-            dispatch({type: CREATE_LABELS, payload: {id: id, value: value.content}})
+            dispatch(onCreateLabelAction(value, id))
             resetForm({values: ''})
             setEditMode(false)
             setCreatedWindow(false)
@@ -298,21 +196,25 @@ export const Main = () => {
         <>
             <div className='container w-75 p-2 border border-primary'>
                 {!path ?
-                    <>
-                        <Button
-                            text='Create category'
-                            onClick={onCreateCategoryClick}
-                        />
-                        <Button
-                            text='Delete all notes'
-                            onClick={onDeleteAllClick}
-                        />
-                    </>
+                    (
+                        <>
+                            <Button
+                                text='Create category'
+                                onClick={onCreateCategoryClick}
+                            />
+                            <Button
+                                text='Delete all notes'
+                                onClick={onDeleteAllClick}
+                            />
+                        </>
+                    )
                     :
-                    <Button
-                        text='Create Subcategory'
-                        onClick={onCreateSubCategoryClick}
-                    />
+                    (
+                        <Button
+                            text='Create Subcategory'
+                            onClick={onCreateSubCategoryClick}
+                        />
+                    )
                 }
                 <Navbar
                     items={categories}
@@ -324,19 +226,23 @@ export const Main = () => {
                     onDeleteCategoryClick={onDeleteCategoryClick}
                 />
                 {path ?
-                    <Navbar
-                        items={currentCategory.subcategories || []}
-                        path={path}
-                        onClick={takeValueFromNavBar}
-                        subCategory={true}
-                    />
+                    (
+                        <Navbar
+                            items={currentCategory.subcategories || []}
+                            path={path}
+                            onClick={takeValueFromNavBar}
+                            subCategory={true}
+                        />
+                    )
                     : null
                 }
                 {selectMode ?
-                    <SelectCategoryForm
-                        items={!path ? categories : currentCategory.subcategories}
-                        onSubmit={!path ? onAddToCategoryAccept : onAddToSubCategoriesAccept}
-                    />
+                    (
+                        <SelectCategoryForm
+                            items={!path ? categories : currentCategory.subcategories}
+                            onSubmit={!path ? onAddToCategoryAccept : onAddToSubCategoriesAccept}
+                        />
+                    )
                     : null
                 }
                 <>
@@ -371,13 +277,15 @@ export const Main = () => {
                             </>
                         )
                         :
-                        <CreateNoteForm
-                            onSubmit={!categoryCreating ? onCreateItemSubmit : onCreateCategorySubmit}
-                            text='Accept'
-                            placeholder='Write your text'
-                            createWindow={createdWindow}
-                            validation={labelValidation}
-                        />
+                        (
+                            <CreateNoteForm
+                                onSubmit={!categoryCreating ? onCreateItemSubmit : onCreateCategorySubmit}
+                                text='Accept'
+                                placeholder='Write your text'
+                                createWindow={createdWindow}
+                                validation={labelValidation}
+                            />
+                        )
                     }
                 </>
                 <NotesList

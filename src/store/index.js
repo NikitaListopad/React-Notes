@@ -1,9 +1,9 @@
-import {createStore, combineReducers} from "redux";
-import {notes} from "./notes";
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { persistStore, persistReducer } from 'redux-persist'
+import {createStore, combineReducers, applyMiddleware} from "redux";
+import thunk from 'redux-thunk';
+import {composeWithDevTools} from 'redux-devtools-extension';
+import {persistStore, persistReducer} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-
+import {notes} from "./notes";
 
 const persistConfig = {
     key: 'notes',
@@ -16,5 +16,5 @@ const reducers = combineReducers({
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers)
-export const store = createStore(persistedReducer, composeWithDevTools())
+export const store = createStore(persistedReducer, composeWithDevTools(applyMiddleware(thunk)))
 export const persistor = persistStore(store)

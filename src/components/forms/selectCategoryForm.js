@@ -1,7 +1,6 @@
 import React from "react";
 import {Formik, Field} from "formik";
-import {Select} from "../elements/select";
-import {Button} from "../elements";
+import {Button, Select} from "../elements";
 
 export const SelectCategoryForm = props => {
 
