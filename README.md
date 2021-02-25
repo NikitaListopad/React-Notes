@@ -1,7 +1,3 @@
-// Didn't implement tags for notes...
-// Didn't fixed some bugs
-// Didn't make optimization of code. Need to create actions for large dispatches
-
 
 # Getting Started with Create React App
 
