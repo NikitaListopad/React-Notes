@@ -108,7 +108,6 @@ export const Main = () => {
         for (let i = 0; i < categories.length; i++) {
             const subCategoryWithNote = categories[i].subcategories.find(category =>
                 category.data.filter(note => note.id !== item.id))
-            if (subCategoryWithNote) {
                 dispatch({
                     type: UPDATE_CATEGORY_NOTES,
                     payload: {
@@ -120,7 +119,6 @@ export const Main = () => {
                         } : category)
                     }
                 })
-            }
         }
         for (let a = 0; a < subcategories.length; a++) {
             dispatch({
