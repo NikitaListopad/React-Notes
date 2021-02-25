@@ -5,7 +5,7 @@ import {
     EDIT_NOTE,
     CREATE_CATEGORY,
     DELETE_CATEGORY,
-    UPDATE_CATEGORY_NOTES, CREATE_SUBCATEGORY, UPDATE_SUBCATEGORY
+    UPDATE_CATEGORY_NOTES, CREATE_SUBCATEGORY, UPDATE_SUBCATEGORY, CREATE_LABELS
 } from "./constants";
 import {getInitialState} from "../../helpers/redux";
 
@@ -56,6 +56,11 @@ export const notes = (state = initialState, action) => {
             return {
                 ...state,
                 subcategories: state.subcategories.map(item => item.id === action.payload.id ? action.payload : item)
+            }
+        case CREATE_LABELS:
+            return {
+                ...state,
+                labels: [action.payload, ...state.labels]
             }
         default: {
             return state

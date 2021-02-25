@@ -15,8 +15,12 @@ import {SelectCategoryForm} from '../components/forms/selectCategoryForm';
 import {Navbar} from '../components/elements/navbar';
 import {useParams} from 'react-router-dom';
 import {Button} from '../components/elements';
+import {noteValidation} from "../validationShema/note";
 
-const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {text: 'Orange', value: 'fcbd81'}, {text: 'Empty', value: 'no'}]
+const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {
+    text: 'Orange',
+    value: 'fcbd81'
+}, {text: 'Empty', value: 'no'}]
 
 export const Main = () => {
 
@@ -33,9 +37,7 @@ export const Main = () => {
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
 
-    const {data: notes} = useSelector(notesSelector)
-    const {categories} = useSelector(notesSelector)
-    const {subcategories} = useSelector(notesSelector, shallowEqual)
+    const {data: notes, categories, labels, subcategories} = useSelector(notesSelector)
     const dispatch = useDispatch()
 
     const {path} = useParams();
@@ -54,7 +56,13 @@ export const Main = () => {
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const result = await dispatch({
             type: CREATE_NOTE,
-            payload: {id: id, title: values.title, content: values.content, created_at: currentTime, color: `#${values.color}`}
+            payload: {
+                id: id,
+                title: values.title,
+                content: values.content,
+                created_at: currentTime,
+                color: `#${values.color}`
+            }
         })
         if (result) {
             resetForm({values: ''})
@@ -62,7 +70,10 @@ export const Main = () => {
     }
 
     const onEditNoteSubmit = (values, {resetForm}) => {
-        dispatch({type: EDIT_NOTE, payload: {...notes.find(note => note.id === targetPost.id), content: values.content}})
+        dispatch({
+            type: EDIT_NOTE,
+            payload: {...notes.find(note => note.id === targetPost.id), content: values.content}
+        })
         for (let i = 0; i < categories.length; i++) {
             if (categories[i].data.find(item => item.id === targetPost.id)) {
                 const subcategories = categories[i].subcategories
@@ -108,17 +119,17 @@ export const Main = () => {
         for (let i = 0; i < categories.length; i++) {
             const subCategoryWithNote = categories[i].subcategories.find(category =>
                 category.data.filter(note => note.id !== item.id))
-                dispatch({
-                    type: UPDATE_CATEGORY_NOTES,
-                    payload: {
-                        ...categories[i],
-                        data: categories[i].data.filter(note => note.id !== item.id),
-                        subcategories: categories[i].subcategories.map(category => category.id === subCategoryWithNote.id ? {
-                            ...category,
-                            data: category.data.filter(note => note.id !== item.id)
-                        } : category)
-                    }
-                })
+            dispatch({
+                type: UPDATE_CATEGORY_NOTES,
+                payload: {
+                    ...categories[i],
+                    data: categories[i].data.filter(note => note.id !== item.id),
+                    subcategories: categories[i].subcategories.map(category => category.id === subCategoryWithNote.id ? {
+                        ...category,
+                        data: category.data.filter(note => note.id !== item.id)
+                    } : category)
+                }
+            })
         }
         for (let a = 0; a < subcategories.length; a++) {
             dispatch({
@@ -241,6 +252,10 @@ export const Main = () => {
         setSelectMode(false)
     }
 
+    const onSelectLabelClick = () => {
+        console.log('label selected')
+    }
+
     return (
         <>
             <div className='container w-75 p-2 border border-primary'>
@@ -292,6 +307,9 @@ export const Main = () => {
                         text={!editMode ? 'Create' : 'Accept edit'}
                         editMode={editMode}
                         colors={colors}
+                        validation={noteValidation}
+                        onSelectLabelClick={onSelectLabelClick}
+                        labels={labels}
                     />
                     :
                     <>

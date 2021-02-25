@@ -7,6 +7,7 @@ export const Button = props => {
                 className={props.className ? props.className : 'btn btn-primary'}
                 onClick={props.onClick}
                 disabled={props.disabled}
+                onDoubleClick={props.onDoubleClick}
         >
             {props.text}
         </button>

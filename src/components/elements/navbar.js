@@ -11,13 +11,13 @@ export const Navbar = props => {
                     <span className='text-muted'>Subcategories:</span>
                     : null
                 }
-                {props.items.map((item, index) =>
-                    <>
+                {props.items.map(item =>
+                    <span key={item.id}>
                         {!props.subCategory ?
-                            <Link to={item.value} key={index}>
+                            <Link to={item.value} key={item.id}>
                                 <Button
                                     type='button'
-                                    key={index}
+                                    key={item.id}
                                     onClick={() => props.onClick(item.value)}
                                     text={item.text}
                                 />
@@ -25,12 +25,12 @@ export const Navbar = props => {
                             :
                             <Button
                                 type='button'
-                                key={index}
+                                key={item.id}
                                 onClick={() => props.onClick(item.value)}
                                 text={item.text}
                             />
                         }
-                    </>
+                    </span>
                 )}
             </div>
             <>
