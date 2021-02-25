@@ -51,6 +51,12 @@ export const Main = () => {
         resetForm({values: ''})
     }
 
+    const onEditNoteClick = item => {
+        setTargetPost(item)
+        setEditMode(true)
+        setInfoMode(false)
+    }
+
     const onEditNoteSubmit = (values, {resetForm}) => {
         dispatch(editNoteAction(values, targetPost))
         resetForm({values: ''})
@@ -63,12 +69,6 @@ export const Main = () => {
         dispatch(deleteNoteAction(item))
     }
 
-    const onEditNoteClick = item => {
-        setTargetPost(item)
-        setEditMode(true)
-        setInfoMode(false)
-    }
-
     const onInfoButtonClick = item => {
         setTargetPost(item)
         setInfoMode(true)
@@ -79,6 +79,30 @@ export const Main = () => {
         setTargetPost(false)
         if (item.id === targetPost.id) {
             setInfoMode(false)
+        }
+    }
+
+    const onCreateCategoryClick = () => {
+        setCreatedWindow(true)
+        setCategoryCreating(true)
+    }
+
+    const onCreateCategorySubmit = (values, {resetForm}) => {
+        const itemsId = categories.map(category => category.id)
+        const id = !itemsId[0] ? 1 : itemsId[0] + 1
+        const isValid = []
+        for (let i = 0; i < categories.length; i++) {
+            if (categories[i].value === values.content) {
+                isValid.push(1)
+            }
+        }
+        if (isValid.length <= 0) {
+            dispatch(createCategoryAction(id, values))
+            setCreatedWindow(false)
+            setCategoryCreating(false)
+            resetForm({values: ''})
+        } else {
+            alert('Category with this name has already been')
         }
     }
 
@@ -106,28 +130,12 @@ export const Main = () => {
         setSelectMode(false)
     }
 
-    const onCreateCategoryClick = () => {
-        setCreatedWindow(true)
-        setCategoryCreating(true)
-    }
-
-    const onCreateCategorySubmit = (values, {resetForm}) => {
-        const itemsId = categories.map(category => category.id)
-        const id = !itemsId[0] ? 1 : itemsId[0] + 1
-        const isValid = []
-        for (let i = 0; i < categories.length; i++) {
-            if (categories[i].value === values.content) {
-                isValid.push(1)
-            }
-        }
-        if (isValid.length <= 0) {
-            dispatch(createCategoryAction(id, values))
-            setCreatedWindow(false)
-            setCategoryCreating(false)
-            resetForm({values: ''})
-        } else {
-            alert('Category with this name has already been')
-        }
+    const onChangeCategoryClick = () => {
+        setOnSubCategoryClick(false)
+        setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
+        setSelectMode(false)
+        setSelectedNotes([])
+        setEditMode(false)
     }
 
     const onDeleteCategoryClick = () => {
@@ -139,25 +147,12 @@ export const Main = () => {
         dispatch(deleteAllCategoriesAction())
     }
 
-    const onChangeCategoryClick = () => {
-        setOnSubCategoryClick(false)
-        setCategoryNotes((categories.find(category => category.value === path)?.data) || [])
-        setSelectMode(false)
-        setSelectedNotes([])
-        setEditMode(false)
-    }
-
     const onCreateSubCategoryClick = () => {
         const name = prompt('Create SubCategory name')
         const itemsId = subcategories.map(subcategory => subcategory.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const subcategory = {id: id, text: name, value: name, data: []}
         dispatch(createSubCategoryAction(currentCategory, subcategory))
-    }
-
-    const takeValueFromNavBar = value => {
-        setOnSubCategoryClick(true)
-        setCategoryNotes((currentCategory.subcategories.find(item => item.value === value)?.data) || [])
     }
 
     const onAddToSubCategoriesAccept = values => {
@@ -167,12 +162,17 @@ export const Main = () => {
         setSelectMode(false)
     }
 
+    const takeValueFromNavBar = value => {
+        setOnSubCategoryClick(true)
+        setCategoryNotes((currentCategory.subcategories.find(item => item.value === value)?.data) || [])
+    }
+
     const onCreateLabelClick = () => {
         setEditMode(true)
         setCreatedWindow(true)
     }
 
-    const onCreateItemSubmit = (value, {resetForm}) => {
+    const onCreateItemSubmit = (value, {resetForm}) => {    // Item in title can be 'Label' or 'Category'
         const ids = []
         const isValid = []
         for (let i = 0; i < labels.length; i++) {

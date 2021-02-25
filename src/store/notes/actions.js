@@ -1,5 +1,5 @@
-export const CREATE_NOTE = 'CREATE_NOTE'
 
+export const CREATE_NOTE = 'CREATE_NOTE'
 export const createNoteAction = (values, currentTime, notes, id) => dispatch => {
     dispatch({
         type: CREATE_NOTE,
@@ -58,7 +58,6 @@ export const editNoteAction = (values, targetPost) => (dispatch, getState) => {
     }
 }
 
-
 export const DELETE_NOTE = 'DELETE_NOTE'
 export const deleteNoteAction = item => (dispatch, getState) => {
     const {notes} = getState()
@@ -87,6 +86,14 @@ export const deleteNoteAction = item => (dispatch, getState) => {
     }
 }
 
+export const CREATE_CATEGORY = 'CREATE_CATEGORY'
+export const createCategoryAction = (id, values) => dispatch => {
+    dispatch({
+        type: CREATE_CATEGORY,
+        payload: {id: id, text: values.content, value: values.content, data: [], subcategories: []}
+    })
+}
+
 export const DELETE_CATEGORY = 'DELETE_CATEGORY'
 export const deleteCategoryAction = value => dispatch => {
     dispatch({type: DELETE_CATEGORY, payload: value})
@@ -95,14 +102,6 @@ export const deleteCategoryAction = value => dispatch => {
 export const DELETE_ALL_CATEGORIES = 'DELETE_ALL_CATEGORIES'
 export const deleteAllCategoriesAction = () => dispatch => {
     dispatch({type: DELETE_ALL_CATEGORIES})
-}
-
-export const CREATE_CATEGORY = 'CREATE_CATEGORY'
-export const createCategoryAction = (id, values) => dispatch => {
-    dispatch({
-        type: CREATE_CATEGORY,
-        payload: {id: id, text: values.content, value: values.content, data: [], subcategories: []}
-    })
 }
 
 export const UPDATE_CATEGORY_NOTES = 'UPDATE_CATEGORY_NOTES'
@@ -126,7 +125,6 @@ export const createSubCategoryAction = (currentCategory, subcategory) => dispatc
         type: CREATE_SUBCATEGORY, payload: subcategory
     })
 }
-
 
 export const UPDATE_SUBCATEGORY = 'UPDATE_SUBCATEGORY'
 export const subCategoryUpdateAction = (subcategory, currentCategory, selectedNotes) => dispatch => {
