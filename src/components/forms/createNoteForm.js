@@ -66,7 +66,7 @@ export const CreateNoteForm = props => {
                                 text={props.text}
                         />
                     </div>
-                    {!props.createWindow ?
+                    {!props.createWindow  && !props.editMode?
                         <div className='d-flex w-100'>
                             <div className='container-md border'>
                                 <Button
@@ -94,7 +94,7 @@ export const CreateNoteForm = props => {
                                         <span className='text-muted'>Use double click to add labels for your Note</span>
                                         :
                                         values.labels.map(label =>
-                                            <span key={label.id}>&ensp;{label.value}</span>
+                                            <span key={label.id} className='text-success'>&ensp;{label.value}</span>
                                         )
                                     }
                                 </>

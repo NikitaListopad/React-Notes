@@ -58,7 +58,7 @@ export const Navbar = props => {
                                         <Link to='/'>
                                             <Button
                                                 type='button'
-                                                className=''
+                                                className='btn btn-danger'
                                                 onClick={props.onDeleteCategoryClick}
                                                 text={props.selectButtonText}
                                             />

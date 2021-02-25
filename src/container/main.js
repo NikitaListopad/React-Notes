@@ -194,16 +194,18 @@ export const Main = () => {
 
     return (
         <>
-            <div className='container w-75 p-2 border border-primary'>
+            <div className='container w-75 p-2 border border-primary bg-light'>
                 {!path ?
                     (
                         <>
                             <Button
                                 text='Create category'
+                                className='btn btn-success'
                                 onClick={onCreateCategoryClick}
                             />
                             <Button
                                 text='Delete all categories'
+                                className='btn btn-danger'
                                 onClick={onDeleteAllCategoriesClick}
                             />
                         </>
@@ -212,6 +214,7 @@ export const Main = () => {
                     (
                         <Button
                             text='Create Subcategory'
+                            className='btn btn-success'
                             onClick={onCreateSubCategoryClick}
                         />
                     )
