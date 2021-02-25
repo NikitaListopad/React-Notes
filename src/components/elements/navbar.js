@@ -37,23 +37,35 @@ export const Navbar = props => {
                 {!props.subCategory ?
                     (
                         <>
-                            {/*{!props.path ?*/}
-                            <Button
-                                type='button'
-                                className=''
-                                onClick={props.onSelectCategoryClick}
-                                text={props.text}
-                            />
-                            {/*    :*/}
-                            {/*    <Link to='/'>*/}
-                            {/*        <Button*/}
-                            {/*            type='button'*/}
-                            {/*            className=''*/}
-                            {/*            onClick={props.onDeleteCategoryClick}*/}
-                            {/*            text={props.selectButtonText}*/}
-                            {/*        />*/}
-                            {/*    </Link>*/}
-                            {/*}*/}
+                            {!props.path ?
+                                (
+                                    <Button
+                                        type='button'
+                                        className=''
+                                        onClick={props.onSelectCategoryClick}
+                                        text={props.text}
+                                    />
+                                )
+                                :
+                                (
+                                    <div>
+                                        <Button
+                                            type='button'
+                                            className=''
+                                            onClick={props.onSelectCategoryClick}
+                                            text={props.text}
+                                        />
+                                        <Link to='/'>
+                                            <Button
+                                                type='button'
+                                                className=''
+                                                onClick={props.onDeleteCategoryClick}
+                                                text={props.selectButtonText}
+                                            />
+                                        </Link>
+                                    </div>
+                                )
+                            }
                         </>
                     )
                     : null

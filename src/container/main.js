@@ -3,14 +3,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {
     createNoteAction,
-    DELETE_ALL_NOTES,
     deleteNoteAction,
     notesSelector,
-    onCreateCategoryAction,
-    onCreateLabelAction,
-    onEditNoteAction,
-    onSubCategoryUpdateAction,
-    onUpdateCategoryAction,
+    createCategoryAction,
+    createLabelAction, createSubCategoryAction,
+    editNoteAction,
+    subCategoryUpdateAction,
+    updateCategoryAction, deleteAllCategoriesAction, deleteCategoryAction,
 } from '../store/notes';
 import {NotesList} from '../components/notes';
 import {Button, Navbar} from '../components/elements';
@@ -24,7 +23,6 @@ export const Main = () => {
     const [selectedNotes, setSelectedNotes] = useState([])
     const [categoryNotes, setCategoryNotes] = useState([])
     const [currentCategory, setCurrentCategory] = useState({})
-    const [counter, setCounter] = useState(1)
 
     const [createdWindow, setCreatedWindow] = useState(false)
     const [onSubCategoryClick, setOnSubCategoryClick] = useState(false)
@@ -54,7 +52,7 @@ export const Main = () => {
     }
 
     const onEditNoteSubmit = (values, {resetForm}) => {
-        dispatch(onEditNoteAction(values, targetPost))
+        dispatch(editNoteAction(values, targetPost))
         resetForm({values: ''})
         setEditMode(false)
         setTargetPost(false)
@@ -63,10 +61,6 @@ export const Main = () => {
 
     const onDeleteNoteClick = item => {
         dispatch(deleteNoteAction(item))
-    }
-
-    const onDeleteAllClick = () => {
-        dispatch({type: DELETE_ALL_NOTES})
     }
 
     const onEditNoteClick = item => {
@@ -107,7 +101,7 @@ export const Main = () => {
     }
 
     const onAddToCategoryAccept = values => {
-        dispatch(onUpdateCategoryAction(values, selectedNotes))
+        dispatch(updateCategoryAction(values, selectedNotes))
         setSelectedNotes([])
         setSelectMode(false)
     }
@@ -117,7 +111,7 @@ export const Main = () => {
         setCategoryCreating(true)
     }
 
-    const onCreateCategorySubmit = values => {
+    const onCreateCategorySubmit = (values, {resetForm}) => {
         const itemsId = categories.map(category => category.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const isValid = []
@@ -127,16 +121,22 @@ export const Main = () => {
             }
         }
         if (isValid.length <= 0) {
-            dispatch(onCreateCategoryAction(id, values))
+            dispatch(createCategoryAction(id, values))
             setCreatedWindow(false)
             setCategoryCreating(false)
+            resetForm({values: ''})
         } else {
             alert('Category with this name has already been')
         }
     }
 
     const onDeleteCategoryClick = () => {
-        setCounter(counter + 1)
+        const category = categories.find(category => category.value === path)
+        dispatch(deleteCategoryAction(category))
+    }
+
+    const onDeleteAllCategoriesClick = () => {
+        dispatch(deleteAllCategoriesAction())
     }
 
     const onChangeCategoryClick = () => {
@@ -152,7 +152,7 @@ export const Main = () => {
         const itemsId = subcategories.map(subcategory => subcategory.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
         const subcategory = {id: id, text: name, value: name, data: []}
-        dispatch(onCreateSubCategoryClick(currentCategory, subcategory))
+        dispatch(createSubCategoryAction(currentCategory, subcategory))
     }
 
     const takeValueFromNavBar = value => {
@@ -162,7 +162,7 @@ export const Main = () => {
 
     const onAddToSubCategoriesAccept = values => {
         const subcategory = subcategories.find(item => item.value === values.category)
-        dispatch(onSubCategoryUpdateAction(subcategory, currentCategory, selectedNotes))
+        dispatch(subCategoryUpdateAction(subcategory, currentCategory, selectedNotes))
         setSelectedNotes([])
         setSelectMode(false)
     }
@@ -183,7 +183,7 @@ export const Main = () => {
         }
         const id = ids.length <= 0 ? 1 : ids[0] + 1
         if (isValid.length <= 0) {
-            dispatch(onCreateLabelAction(value, id))
+            dispatch(createLabelAction(value, id))
             resetForm({values: ''})
             setEditMode(false)
             setCreatedWindow(false)
@@ -203,8 +203,8 @@ export const Main = () => {
                                 onClick={onCreateCategoryClick}
                             />
                             <Button
-                                text='Delete all notes'
-                                onClick={onDeleteAllClick}
+                                text='Delete all categories'
+                                onClick={onDeleteAllCategoriesClick}
                             />
                         </>
                     )

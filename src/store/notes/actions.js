@@ -15,7 +15,7 @@ export const createNoteAction = (values, currentTime, notes, id) => dispatch => 
 }
 
 export const EDIT_NOTE = 'EDIT_NOTE'
-export const onEditNoteAction = (values, targetPost) => (dispatch, getState) => {
+export const editNoteAction = (values, targetPost) => (dispatch, getState) => {
     const {notes: data} = getState()
     const {data: notes, categories} = data
     dispatch({
@@ -87,11 +87,18 @@ export const deleteNoteAction = item => (dispatch, getState) => {
     }
 }
 
-export const DELETE_ALL_NOTES = 'DELETE_ALL_NOTES'
 export const DELETE_CATEGORY = 'DELETE_CATEGORY'
+export const deleteCategoryAction = value => dispatch => {
+    dispatch({type: DELETE_CATEGORY, payload: value})
+}
+
+export const DELETE_ALL_CATEGORIES = 'DELETE_ALL_CATEGORIES'
+export const deleteAllCategoriesAction = () => dispatch => {
+    dispatch({type: DELETE_ALL_CATEGORIES})
+}
 
 export const CREATE_CATEGORY = 'CREATE_CATEGORY'
-export const onCreateCategoryAction = (id, values) => dispatch => {
+export const createCategoryAction = (id, values) => dispatch => {
     dispatch({
         type: CREATE_CATEGORY,
         payload: {id: id, text: values.content, value: values.content, data: [], subcategories: []}
@@ -99,7 +106,7 @@ export const onCreateCategoryAction = (id, values) => dispatch => {
 }
 
 export const UPDATE_CATEGORY_NOTES = 'UPDATE_CATEGORY_NOTES'
-export const onUpdateCategoryAction = (values, selectedNotes) => (dispatch, getState) => {
+export const updateCategoryAction = (values, selectedNotes) => (dispatch, getState) => {
     const {notes} = getState()
     const {categories} = notes
     const category = categories.find(item => item.value === values.category)
@@ -110,7 +117,7 @@ export const onUpdateCategoryAction = (values, selectedNotes) => (dispatch, getS
 }
 
 export const CREATE_SUBCATEGORY = 'CREATE_SUBCATEGORY'
-export const onCreateSubCategoryClick = (currentCategory, subcategory) => dispatch => {
+export const createSubCategoryAction = (currentCategory, subcategory) => dispatch => {
     dispatch({
         type: UPDATE_CATEGORY_NOTES,
         payload: {...currentCategory, subcategories: [...currentCategory.subcategories, subcategory]}
@@ -120,8 +127,9 @@ export const onCreateSubCategoryClick = (currentCategory, subcategory) => dispat
     })
 }
 
+
 export const UPDATE_SUBCATEGORY = 'UPDATE_SUBCATEGORY'
-export const onSubCategoryUpdateAction = (subcategory, currentCategory, selectedNotes) => dispatch => {
+export const subCategoryUpdateAction = (subcategory, currentCategory, selectedNotes) => dispatch => {
     dispatch({
         type: UPDATE_SUBCATEGORY,
         payload: {...subcategory, data: [...subcategory.data, ...selectedNotes]}
@@ -138,6 +146,6 @@ export const onSubCategoryUpdateAction = (subcategory, currentCategory, selected
 }
 
 export const CREATE_LABELS = 'CREATE_LABELS'
-export const onCreateLabelAction = (value, id) => dispatch => {
+export const createLabelAction = (value, id) => dispatch => {
     dispatch({type: CREATE_LABELS, payload: {id: id, value: value.content}})
 }
