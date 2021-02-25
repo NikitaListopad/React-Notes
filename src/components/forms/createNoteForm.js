@@ -30,7 +30,7 @@ export const CreateNoteForm = props => {
               }) => (
                 <div className='container'>
                     <div className='note-form w-100'>
-                        {!props.editMode ?
+                        {!props.editMode && !props.createWindow ?
                             <>
                                 <Field as={Input}
                                        name='title'
@@ -57,7 +57,7 @@ export const CreateNoteForm = props => {
                                type='text'
                                value={values ? values.content : ''}
                                className='form-control'
-                               placeholder='Write your text'
+                               placeholder={props.createWindow ? 'Write name for your element' : 'Write your text'}
                                onChange={handleChange}
                                onBlur={handleBlur}
                         />
@@ -67,6 +67,7 @@ export const CreateNoteForm = props => {
                                 text={props.text}
                         />
                     </div>
+                    {!props.createWindow ?
                     <div className='d-flex w-100'>
                         <div className='container-md border'>
                             <Button
@@ -100,6 +101,8 @@ export const CreateNoteForm = props => {
                             </>
                         </div>
                     </div>
+                    : null
+                    }
                 </div>
             )}
         </Formik>

@@ -16,6 +16,7 @@ import {Navbar} from '../components/elements/navbar';
 import {useParams} from 'react-router-dom';
 import {Button} from '../components/elements';
 import {noteValidation} from "../validationShema/note";
+import {labelValidation} from "../validationShema/label";
 
 const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {
     text: 'Orange',
@@ -35,6 +36,7 @@ export const Main = () => {
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
     const [selectMode, setSelectMode] = useState(false)
+    const [categoryCreating, setCategoryCreating] = useState(false)
 
     const {data: notes, categories, labels, subcategories} = useSelector(notesSelector)
     const dispatch = useDispatch()
@@ -191,14 +193,30 @@ export const Main = () => {
     }
 
     const onCreateCategoryClick = () => {
+        setCreatedWindow(true)
+        setCategoryCreating(true)
+    }
+
+    const onCreateCategorySubmit = values => {
         const itemsId = categories.map(category => category.id)
         const id = !itemsId[0] ? 1 : itemsId[0] + 1
-        const name = prompt('What is category name? ', '')
-        dispatch({
-            type: CREATE_CATEGORY,
-            payload: {id: id, text: name, value: name, data: [], subcategories: []}
-        })
-        setCounter(counter + 1)
+        const isValid = []
+
+        for (let i = 0; i < categories.length; i++) {
+            if (categories[i].value === values.content) {
+                isValid.push(1)
+            }
+        }
+        if (isValid.length <= 0) {
+            dispatch({
+                type: CREATE_CATEGORY,
+                payload: {id: id, text: values.content, value: values.content, data: [], subcategories: []}
+            })
+            setCreatedWindow(false)
+            setCategoryCreating(false)
+        } else {
+            alert('Category with this name has already been')
+        }
     }
 
     const onDeleteCategoryClick = () => {
@@ -254,25 +272,26 @@ export const Main = () => {
     const onCreateLabelClick = () => {
         setEditMode(true)
         setCreatedWindow(true)
-
     }
 
-    const onCreateItemSubmit = value => {
-        console.log(value)
-        // const ids = []
-        // const isValid = []
-        // for (let i = 0; i < labels.length; i++) {
-        //     ids.unshift(labels[i].id)
-        //     if (labels[i].value === value.content) {
-        //         isValid.push(1)
-        //     }
-        // }
-        // const id = ids.length <= 0 ? 1 : ids[0] + 1
-        // if (isValid.length <= 0) {
-        //     dispatch({type: CREATE_LABELS, payload: {id: id, value: value.content}})
-        // }
-        // setEditMode(false)
-        // setCreatedWindow(false)
+    const onCreateItemSubmit = (value, {resetForm}) => {
+        const ids = []
+        const isValid = []
+        for (let i = 0; i < labels.length; i++) {
+            ids.unshift(labels[i].id)
+            if (labels[i].value === value.content) {
+                isValid.push(1)
+            }
+        }
+        const id = ids.length <= 0 ? 1 : ids[0] + 1
+        if (isValid.length <= 0) {
+            dispatch({type: CREATE_LABELS, payload: {id: id, value: value.content}})
+            resetForm({values: ''})
+            setEditMode(false)
+            setCreatedWindow(false)
+        } else {
+            alert('Label with this name also created')
+        }
     }
 
     return (
@@ -320,31 +339,47 @@ export const Main = () => {
                     />
                     : null
                 }
-                {!path ?
-                    (
+                <>
+                    {!createdWindow ?
+                        (
+                            <>
+                                {!path ?
+                                    (
+                                        <CreateNoteForm
+                                            onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
+                                            text={!editMode ? 'Create' : 'Accept edit'}
+                                            editMode={editMode}
+                                            colors={colors}
+                                            validation={noteValidation}
+                                            onCreateLabelClick={onCreateLabelClick}
+                                            labels={labels}
+                                        />
+                                    )
+                                    :
+                                    <>
+                                        {editMode ?
+                                            (
+                                                <CreateNoteForm
+                                                    onSubmit={onEditNoteSubmit}
+                                                    text='Accept edit'
+                                                />
+                                            )
+                                            : null
+                                        }
+                                    </>
+                                }
+                            </>
+                        )
+                        :
                         <CreateNoteForm
-                            onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
-                            text={!editMode ? 'Create' : 'Accept edit'}
-                            editMode={editMode}
-                            colors={colors}
-                            validation={noteValidation}
-                            onCreateLabelClick={onCreateLabelClick}
-                            labels={labels}
+                            onSubmit={!categoryCreating ? onCreateItemSubmit : onCreateCategorySubmit}
+                            text='Accept'
+                            placeholder='Write your text'
+                            createWindow={createdWindow}
+                            validation={labelValidation}
                         />
-                    )
-                    :
-                    <>
-                        {editMode ?
-                            (
-                                <CreateNoteForm
-                                    onSubmit={onEditNoteSubmit}
-                                    text='Accept edit'
-                                />
-                            )
-                            : null
-                        }
-                    </>
-                }
+                    }
+                </>
                 <NotesList
                     selectMode={selectMode}
                     onDeleteNoteClick={onDeleteNoteClick}

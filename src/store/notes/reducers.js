@@ -60,7 +60,7 @@ export const notes = (state = initialState, action) => {
         case CREATE_LABELS:
             return {
                 ...state,
-                labels: [action.payload, ...state.labels]
+                labels: [...state.labels, action.payload]
             }
         default: {
             return state
