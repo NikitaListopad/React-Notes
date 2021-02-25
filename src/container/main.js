@@ -31,7 +31,6 @@ export const Main = () => {
 
     const [counter, setCounter] = useState(1)
 
-    const [backgroundColor, setBackGroundColor] = useState(false)
     const [onSubCategoryClick, setOnSubCategoryClick] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
@@ -69,8 +68,6 @@ export const Main = () => {
             resetForm({values: ''})
         }
     }
-
-    console.log(notes)
 
     const onEditNoteSubmit = (values, {resetForm}) => {
         dispatch({
@@ -153,14 +150,13 @@ export const Main = () => {
     }
 
     const onInfoButtonClick = item => {
-        setBackGroundColor('#fcfafa')
         setTargetPost(item)
         setInfoMode(true)
         setEditMode(false)
     }
 
     const onNoteButtonClick = item => {
-        setBackGroundColor(false)
+        setTargetPost(false)
         if (item.id === targetPost.id) {
             setInfoMode(false)
         }
@@ -255,8 +251,8 @@ export const Main = () => {
         setSelectMode(false)
     }
 
-    const onSelectLabelClick = () => {
-        console.log('label selected')
+    const onCreateLabelClick = () => {
+        console.log('label created')
     }
 
     return (
@@ -311,7 +307,7 @@ export const Main = () => {
                         editMode={editMode}
                         colors={colors}
                         validation={noteValidation}
-                        onSelectLabelClick={onSelectLabelClick}
+                        onCreateLabelClick={onCreateLabelClick}
                         labels={labels}
                     />
                     :
@@ -334,7 +330,6 @@ export const Main = () => {
                     onInfoClick={!infoMode ? onInfoButtonClick : onNoteButtonClick}
                     targetPost={targetPost}
                     onSelectNoteClick={onSelectNoteClick}
-                    backgroundColor={backgroundColor}
                     subCategory={onSubCategoryClick}
                 />
             </div>

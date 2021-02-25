@@ -9,11 +9,10 @@ export const Note = props => {
         <>
             <li key={props.id}
                 className='list-group-item d-flex flex-md-column pt-2 mt-3 border-top'
-                style={props.targetPost.id === props.item.id ? {backgroundColor: props.backgroundColor} : null}
-
+                style={{backgroundColor: props.item.color}}
             >
                 <p className='m-0 p-0'><em>{props.item.title}</em></p>
-                <div className='list-group-item-action d-flex justify-content-between mt-3'>
+                <div className=' d-flex justify-content-between mt-3'>
                     {props.selectMode ?
                         <div className='form-check'>
                             <Input type='checkbox'
@@ -23,9 +22,7 @@ export const Note = props => {
                         </div>
                         : null
                     }
-                    <span className={`rounded p-2 text-break mx-1 w-75 mr-5 ${props.infoMode ? 'text-muted' : ''}`}
-                          style={{backgroundColor: props.item.color}}
-                    >
+                    <span className={`rounded p-2 text-break mx-1 w-75 mr-5 ${props.infoMode ? 'text-muted' : ''}`}>
                     {(props.targetPost.id === props.item.id) && props.infoMode ? `Created at: ${props.item.created_at}` : props.item.content}
                     </span>
                     <div className='btn-group'>
@@ -52,7 +49,9 @@ export const Note = props => {
 
                     </div>
                 </div>
-                <p className='m-0 mt-3 text-left'><span className='text-muted mr-5'>Labels:</span>{props.item.labels.map(label => <span key={label.id}>&ensp;{label.value}</span>)}
+                <p className='m-0 mt-3 text-left'><span
+                    className='text-muted mr-5'>Labels:</span>{props.item.labels.map(label => <span
+                    key={label.id}>&ensp;{label.value}</span>)}
                 </p>
             </li>
         </>
