@@ -102,7 +102,7 @@ export const Main = () => {
             setCategoryCreating(false)
             resetForm({values: ''})
         } else {
-            alert('Category with this name has already been')
+            alert('Category with this name has already created')
         }
     }
 
