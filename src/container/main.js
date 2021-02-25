@@ -16,7 +16,7 @@ import {Navbar} from '../components/elements/navbar';
 import {useParams} from 'react-router-dom';
 import {Button} from '../components/elements';
 
-const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {text: 'Orange', value: 'fcbd81'}]
+const colors = [{text: 'Red', value: 'fa8787'}, {text: 'Blue', value: 'a4d8fc'}, {text: 'Orange', value: 'fcbd81'}, {text: 'Empty', value: 'no'}]
 
 export const Main = () => {
 

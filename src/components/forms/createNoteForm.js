@@ -2,6 +2,7 @@ import React from "react";
 import {Field, Formik} from "formik";
 import {Button, Input} from "../elements";
 import {Select} from "../elements/select";
+import {noteValidation} from "../../validationShema/note";
 
 export const CreateNoteForm = props => {
 
@@ -16,6 +17,7 @@ export const CreateNoteForm = props => {
             onSubmit={(values, {resetForm}) => {
                 props.onSubmit(values, {resetForm})
             }}
+            validationSchema={noteValidation}
         >
             {({
                   values,

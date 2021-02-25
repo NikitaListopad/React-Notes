@@ -8,11 +8,11 @@ export const Note = props => {
     return (
         <>
             <li key={props.id}
-                className='list-group-item d-flex flex-md-column pt-2'
+                className='list-group-item d-flex flex-md-column pt-2 mt-3 border-top'
                 style={props.targetPost.id === props.item.id ? {backgroundColor: props.backgroundColor} : null}
 
             >
-                <p className='m-0 p-0 border-bottom'><em>{props.item.title}</em></p>
+                <p className='m-0 p-0'><em>{props.item.title}</em></p>
                 <div className='list-group-item-action d-flex justify-content-between mt-3'>
                     {props.selectMode ?
                         <div className='form-check'>
