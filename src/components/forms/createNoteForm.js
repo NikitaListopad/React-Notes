@@ -69,12 +69,18 @@ export const CreateNoteForm = props => {
                     </div>
                     <div className='d-flex w-100'>
                         <div className='container-md border'>
+                            <Button
+                                onClick={props.onCreateLabelClick}
+                                text='Create own label'
+                                type='button'
+                                className='btn btn-link font-weight-bold text-decoration-none'
+                            />
                             {props.labels.map(label =>
                                 <Field as={Button}
                                        key={label.id}
                                        name='labels'
                                        type='button'
-                                       className='btn btn-link'
+                                       className='btn btn-link '
                                        onDoubleClick={() => {
                                            setFieldValue('labels', [...values.labels, label])
                                        }}

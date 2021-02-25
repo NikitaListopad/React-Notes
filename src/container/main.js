@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {CreateNoteForm} from '../components/forms/createNoteForm';
-import {shallowEqual, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
-    CREATE_CATEGORY,
+    CREATE_CATEGORY, CREATE_LABELS,
     CREATE_NOTE, CREATE_SUBCATEGORY,
     DELETE_ALL_NOTES,
     DELETE_NOTE,
@@ -28,9 +28,9 @@ export const Main = () => {
     const [selectedNotes, setSelectedNotes] = useState([])
     const [categoryNotes, setCategoryNotes] = useState([])
     const [currentCategory, setCurrentCategory] = useState({})
-
     const [counter, setCounter] = useState(1)
 
+    const [createdWindow, setCreatedWindow] = useState(false)
     const [onSubCategoryClick, setOnSubCategoryClick] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [infoMode, setInfoMode] = useState(false)
@@ -252,7 +252,27 @@ export const Main = () => {
     }
 
     const onCreateLabelClick = () => {
-        console.log('label created')
+        setEditMode(true)
+        setCreatedWindow(true)
+
+    }
+
+    const onCreateItemSubmit = value => {
+        console.log(value)
+        // const ids = []
+        // const isValid = []
+        // for (let i = 0; i < labels.length; i++) {
+        //     ids.unshift(labels[i].id)
+        //     if (labels[i].value === value.content) {
+        //         isValid.push(1)
+        //     }
+        // }
+        // const id = ids.length <= 0 ? 1 : ids[0] + 1
+        // if (isValid.length <= 0) {
+        //     dispatch({type: CREATE_LABELS, payload: {id: id, value: value.content}})
+        // }
+        // setEditMode(false)
+        // setCreatedWindow(false)
     }
 
     return (
@@ -301,22 +321,26 @@ export const Main = () => {
                     : null
                 }
                 {!path ?
-                    <CreateNoteForm
-                        onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
-                        text={!editMode ? 'Create' : 'Accept edit'}
-                        editMode={editMode}
-                        colors={colors}
-                        validation={noteValidation}
-                        onCreateLabelClick={onCreateLabelClick}
-                        labels={labels}
-                    />
+                    (
+                        <CreateNoteForm
+                            onSubmit={!editMode ? onCreateNoteSubmit : onEditNoteSubmit}
+                            text={!editMode ? 'Create' : 'Accept edit'}
+                            editMode={editMode}
+                            colors={colors}
+                            validation={noteValidation}
+                            onCreateLabelClick={onCreateLabelClick}
+                            labels={labels}
+                        />
+                    )
                     :
                     <>
                         {editMode ?
-                            <CreateNoteForm
-                                onSubmit={onEditNoteSubmit}
-                                text={'Accept edit'}
-                            />
+                            (
+                                <CreateNoteForm
+                                    onSubmit={onEditNoteSubmit}
+                                    text='Accept edit'
+                                />
+                            )
                             : null
                         }
                     </>
